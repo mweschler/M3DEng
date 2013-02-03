@@ -51,7 +51,7 @@ namespace M3D{
 
 		cout<<"GLEW has been initialized\n";
 
-		if(!GLEW_VERSION_2_0){
+		if(!GLEW_VERSION_2_1){
 			cout<<"OpenGL version 2.0 must be supported!\n";
 			glfwTerminate();
 			return false;
@@ -67,14 +67,6 @@ namespace M3D{
 
 		cout<<"ResourceManager initialized.\n";
 
-		if(!sceneManager.initialize()){
-			cout<<"SceneManager initialization failed\n";
-			glfwTerminate();
-			return false;
-		}
-
-		cout<<"SceneManager initialized.\n";
-
 		if(!renderSystem.initialize()){
 			cout<<"RenderSystem initialization failed!\n";
 			glfwTerminate();
@@ -82,6 +74,14 @@ namespace M3D{
 		}
 
 		cout<<"RenderSystem initialized.\n";
+
+		if(!sceneManager.initialize(&renderSystem)){
+			cout<<"SceneManager initialization failed\n";
+			glfwTerminate();
+			return false;
+		}
+
+		cout<<"SceneManager initialized.\n";
 
 		cout<<"Initialization complete!\n";
 		initialized = true;

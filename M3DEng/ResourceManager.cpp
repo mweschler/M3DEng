@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <sstream>
 #include <GL/glew.h>
 
 #include "ResourceManager.h"
@@ -35,7 +36,7 @@ namespace M3D{
 
 		//get size of file
 		file.seekg(0, std::ios::end);
-		int fileLength = file.tellg();
+		int fileLength = (int)file.tellg();
 
 		char* data = new char[fileLength];
 		memset(data, 0, sizeof(char) * fileLength);
@@ -125,4 +126,56 @@ namespace M3D{
 		return program;
 	}
 
+
+	Mesh* ResourceManager::loadObjFile(const std::string filename){
+		std::ifstream file;
+		file.open(filename, std::ios::in);
+
+		if(!file.is_open()){
+			std::cout<<"Could not open OBJ file "<<filename<<std::endl;
+			return NULL;
+		}
+		Mesh* mesh = new Mesh();
+		std::vector<glm::vec4> verticies = *mesh->getVerticies();
+		std::vector<GLushort> elements = *mesh->getElements();
+
+		//parse file
+		std::string line;
+		while(std::getline(file, line)){
+			if(line.substr(0,2) == "v "){
+				//found a verticies
+				std::istringstream stream(line.substr(2));
+				glm::vec4 vertex;
+				stream >> vertex.x;
+				stream >> vertex.y;
+				stream >> vertex.z;
+				vertex.w = 1.0f;
+
+				verticies.push_back(vertex);
+			} else if (line.substr(0,2) == "f "){
+				//found a face
+				std::istringstream stream(line.substr(2));
+				GLshort vert1, vert2, vert3;
+				stream >> vert1;
+				stream >> vert2;
+				stream >> vert3;
+
+				//offset indicies to start at 0, not 1
+				vert1--;
+				vert2--;
+				vert3--;
+				
+				elements.push_back(vert1);
+				elements.push_back(vert2);
+				elements.push_back(vert3);
+			} else { 
+				//Only verticies and faces will be processed
+			}
+		}
+
+		file.close();
+
+		mesh->calculateNormals();
+		return mesh;
+	}
 }

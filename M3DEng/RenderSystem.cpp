@@ -17,4 +17,8 @@ namespace M3D{
 	void RenderSystem::shutdown(void){
 		initialized = false;
 	}
+
+	void RenderSystem::renderEntity(Entity* entity)const{
+	
+	}
 }

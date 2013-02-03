@@ -17,10 +17,12 @@ namespace M3D{
 		void setPosZ(float z);
 		void setMaterial(Material const* mat);
 		void setMesh(Mesh const* mesh);
+		void setVisible(bool visible);
 	private:
 		glm::vec3 position;
 		Material const* material;
 		Mesh const* mesh;
+		bool visible;
 	};
 }
 

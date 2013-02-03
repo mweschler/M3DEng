@@ -3,6 +3,7 @@
 namespace M3D{
 	Entity::Entity(void){
 		this->position = glm::vec3(0.0f, 0.0f, 0.0f);
+		this->visible = false;
 	}
 
 	Entity::~Entity(void){
@@ -35,5 +36,9 @@ namespace M3D{
 
 	void Entity::setMesh(Mesh const* mesh){
 		this->mesh = mesh;
+	}
+
+	void Entity::setVisible(bool visible){
+		this->visible = visible;
 	}
 }

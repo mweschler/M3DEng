@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <vector>
+#include "Mesh.h"
 
 #define RM_SHADER_FAILURE -1
 
@@ -15,6 +16,7 @@ namespace M3D{
 		void shutdown(void);
 		GLuint loadShader(const GLenum type, const std::string filename);
 		GLuint createProgram(const std::vector<GLuint> shaders);
+		Mesh* loadObjFile(const std::string filename);
 	private:
 		char *loadFile(const std::string filename);
 		bool initialized;
