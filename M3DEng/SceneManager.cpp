@@ -12,12 +12,13 @@ namespace M3D{
 
 	bool SceneManager::initialize(void){
 		initalized = true;
-
+		
 		return true;
 	}
 
 	void SceneManager::shutdown(void){
 		initalized = false;
+		entities.clear();
 	}
 
 }

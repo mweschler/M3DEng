@@ -1,6 +1,8 @@
 #ifndef _SCENE_MANAGER_H_
 #define _SCENE_MANAGER_H_
 
+#include <vector>
+
 namespace M3D{
 	class SceneManager
 	{
@@ -11,6 +13,7 @@ namespace M3D{
 		void shutdown(void);
 	private:
 		bool initalized;
+		std::vector<Entity> entities;
 	};
 
 }

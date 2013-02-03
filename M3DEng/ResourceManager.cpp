@@ -98,7 +98,7 @@ namespace M3D{
 		GLuint program = glCreateProgram();
 
 		//add shader to the program
-		for(int i = 0; i < shaders.size(); ++i){
+		for(unsigned i = 0; i < shaders.size(); ++i){
 			glAttachShader(program, shaders[i]);
 		}
 
@@ -122,5 +122,7 @@ namespace M3D{
 			return RM_SHADER_FAILURE;
 		}
 
+		return program;
 	}
+
 }
