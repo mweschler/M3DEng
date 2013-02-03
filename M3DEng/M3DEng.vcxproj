@@ -58,7 +58,9 @@
       <AdditionalDependencies>glfw.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)3rdparty\glew-1.9.0\bin\glew32.dll" "$(OutDir)"  /Y</Command>
+      <Command>xcopy "$(SolutionDir)3rdparty\glew-1.9.0\bin\glew32.dll" "$(OutDir)"  /Y
+xcopy "$(ProjectDir)*.vert" "$(OutDir)" /Y
+xcopy "$(ProjectDir)*.frag" "$(OutDir)" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -75,21 +77,29 @@
       <AdditionalDependencies>glfw.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)3rdparty\glew-1.9.0\bin\glew32.dll" "$(OutDir)"  /Y</Command>
+      <Command>xcopy "$(SolutionDir)3rdparty\glew-1.9.0\bin\glew32.dll" "$(OutDir)"  /Y
+xcopy "$(ProjectDir)*.vert" "$(OutDir)" /Y
+xcopy "$(ProjectDir)*.frag" "$(OutDir)" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="M3DApp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="M3DApp.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SceneManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="basic.frag" />
+    <None Include="basic.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
