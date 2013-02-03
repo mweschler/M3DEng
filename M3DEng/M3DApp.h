@@ -2,6 +2,8 @@
 #define _M3DAPP_H_
 
 #include "ResourceManager.h"
+#include "SceneManager.h"
+#include "RenderSystem.h"
 
 namespace M3D{
 	class M3DApp{
@@ -15,6 +17,8 @@ namespace M3D{
 		bool initialized;
 		bool running;
 		ResourceManager resourceManager;
+		SceneManager sceneManager;
+		RenderSystem renderSystem;
 	};
 }
 

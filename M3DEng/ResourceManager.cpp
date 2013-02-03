@@ -1,15 +1,15 @@
 #include "ResourceManager.h"
 
 namespace M3D{
-	ResourceManager::ResourceManager(){
+	ResourceManager::ResourceManager(void){
 	
 	}
 
-	ResourceManager::~ResourceManager(){
+	ResourceManager::~ResourceManager(void){
 	
 	}
 
-	bool ResourceManager::initialize(){
+	bool ResourceManager::initialize(void){
 	
 		return true;
 	}

@@ -1,10 +1,12 @@
 #include <GL\glew.h>
 #include <GL\glfw.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <iostream>
 
 #include "M3DApp.h"
 #include "ResourceManager.h"
+#include "SceneManager.h"
+#include "RenderSystem.h"
 
 namespace M3D{
 	M3DApp::M3DApp(){
@@ -17,72 +19,82 @@ namespace M3D{
 	}
 
 	bool M3DApp::initialize(int width, int height){
+		using std::cout;
+
 		if(initialized){
-			printf("Application already initilized!\n");
+			cout<<"Application already initilized!\n";
 			return false;
 		}
 
-		printf("Starting initialization.\n");
+		cout<<"Starting initialization.\n";
 
 		if(glfwInit() == GL_FALSE){
-			printf("Could not initialize GLFW!\n");
+			cout<<"Could not initialize GLFW!\n";
 			return false;
 		}
 
-		printf("GLFW has been initialized.\n");
+		cout<<"GLFW has been initialized.\n";
 
 		if(glfwOpenWindow(width, height, 0, 0, 0 ,0 ,0 ,0 ,GLFW_WINDOW) == GL_FALSE){
-			printf("Could not create window!\n");
+			cout<<"Could not create window!\n";
 			glfwTerminate();
 			return false;
 		}
 
-		printf("Window opened.\n");
+		cout<<"Window opened.\n";
 
 		if(glewInit() != GLEW_OK){
-			printf("Could not initialize GLEW!\n");
+			cout<<"Could not initialize GLEW!\n";
 			glfwTerminate();
 			return false;
 		}
 
-		printf("GLEW has been initialized\n");
+		cout<<"GLEW has been initialized\n";
 
 		if(!GLEW_VERSION_2_0){
-			printf("OpenGL version 2.0 must be supported!\n");
+			cout<<"OpenGL version 2.0 must be supported!\n";
 			glfwTerminate();
 			return false;
 		}
 
-		printf("OpenGL 2.0 is supported\n");
-
-		if(!(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)){
-			printf("Shader support not found.\n");
-			glfwTerminate();
-			return false;
-		}
-
-		printf("Vertex and Fragment shaders are supported.\n");
+		cout<<"OpenGL 2.0 is supported\n";
 
 		if(!resourceManager.initialize()){
-			printf("ResourceManager initialization failed!\n");
+			cout<<"ResourceManager initialization failed!\n";
 			glfwTerminate();
 			return false;
 		}
 
-		printf("ResourceManager initialized.\n");
+		cout<<"ResourceManager initialized.\n";
 
-		printf("Initialization complete!\n");
+		if(!sceneManager.initialize()){
+			cout<<"SceneManager initialization failed\n";
+			glfwTerminate();
+			return false;
+		}
+
+		cout<<"SceneManager initialized.\n";
+
+		if(!renderSystem.initialize()){
+			cout<<"RenderSystem initialization failed!\n";
+			glfwTerminate();
+			return false;
+		}
+
+		cout<<"RenderSystem initialized.\n";
+
+		cout<<"Initialization complete!\n";
 		initialized = true;
 		return true;
 	}
 
 	int M3DApp::run(){
 		if(!initialized){
-			printf("Application has not been initialized first!\n");
+			std::cout<<"Application has not been initialized first!\n";
 			return EXIT_FAILURE;
 		}
 
-		printf("Application starting.\n");
+		std::cout<<"Application starting.\n";
 
 		running = true;
 		//do stuff
@@ -101,7 +113,7 @@ namespace M3D{
 	}
 
 	void M3DApp::shutdown(){
-		printf("Shutting down application.\n");
+		std::cout<<"Shutting down application.\n";
 		if(initialized){
 			glfwTerminate();
 

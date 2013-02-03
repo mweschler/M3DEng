@@ -4,9 +4,10 @@
 namespace M3D{
 	class ResourceManager{
 	public:
-		ResourceManager();
-		~ResourceManager();
-		bool initialize();
+		ResourceManager(void);
+		~ResourceManager(void);
+		bool initialize(void);
+		void shutdown(void);
 	private:
 		bool initialized;
 	};
