@@ -60,7 +60,8 @@
     <PostBuildEvent>
       <Command>xcopy "$(SolutionDir)3rdparty\glew-1.9.0\bin\glew32.dll" "$(OutDir)"  /Y
 xcopy "$(ProjectDir)*.vert" "$(OutDir)" /Y
-xcopy "$(ProjectDir)*.frag" "$(OutDir)" /Y</Command>
+xcopy "$(ProjectDir)*.frag" "$(OutDir)" /Y
+xcopy "$(SolutionDir)Meshes\*.*" "$(OutDir)" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -79,7 +80,8 @@ xcopy "$(ProjectDir)*.frag" "$(OutDir)" /Y</Command>
     <PostBuildEvent>
       <Command>xcopy "$(SolutionDir)3rdparty\glew-1.9.0\bin\glew32.dll" "$(OutDir)"  /Y
 xcopy "$(ProjectDir)*.vert" "$(OutDir)" /Y
-xcopy "$(ProjectDir)*.frag" "$(OutDir)" /Y</Command>
+xcopy "$(ProjectDir)*.frag" "$(OutDir)" /Y
+xcopy "$(SolutionDir)Meshes\*.*" "$(OutDir)" /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

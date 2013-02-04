@@ -10,7 +10,7 @@ namespace M3D{
 		~RenderSystem(void);
 		bool initialize(void);
 		void shutdown(void);
-		void renderEntity(Entity* entity) const;
+		void renderEntity(Entity* entity);
 	private:
 		bool initialized;
 	};

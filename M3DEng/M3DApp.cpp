@@ -95,16 +95,44 @@ namespace M3D{
 		}
 
 		std::cout<<"Application starting.\n";
-
+		
 		running = true;
 		//do stuff
+
+		GLuint vert = resourceManager.loadShader(GL_VERTEX_SHADER, "basic.vert");
+		GLuint frag = resourceManager.loadShader(GL_FRAGMENT_SHADER, "basic.frag");
+		std::vector<GLuint> shaders;
+		shaders.push_back(vert);
+		shaders.push_back(frag);
+
+		GLuint prog = resourceManager.createProgram(shaders);
+
+		Mesh* mesh = resourceManager.loadObjFile("decocube_nf4k.obj");
+		if(mesh == NULL){
+			std::cout<<"Mesh was Null, shuting down\n";
+			//shutdown();
+		}
+		Material mat;
+		mat.setProgram(prog);
+		Entity entity;
+		entity.setMaterial(&mat);
+		entity.setMesh(mesh);
+		glEnable(GL_DEPTH_TEST); // enable depth-testing
+		glDepthMask(GL_TRUE); // turn back on
+		glDepthFunc(GL_LESS);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+
 		while(running){
 			glClear( GL_COLOR_BUFFER_BIT );
 			// Swap front and back rendering buffers
+			renderSystem.renderEntity(&entity);
 			glfwSwapBuffers();
 
 
 			if(glfwGetKey( GLFW_KEY_ESC) || !glfwGetWindowParam( GLFW_OPENED )){
+				delete mesh;
 				shutdown();
 			}
 		}

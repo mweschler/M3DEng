@@ -12,7 +12,7 @@ namespace M3D{
 	public:
 		SceneManager(void);
 		~SceneManager(void);
-		bool initialize(RenderSystem const* renderSystem);
+		bool initialize(RenderSystem* renderSystem);
 		void shutdown(void);
 		void renderScene(void);
 		void setMainCamera(Camera *camera);
@@ -21,7 +21,7 @@ namespace M3D{
 		bool initialized;
 		std::vector<Entity> entities;
 		Camera *mainCamera;
-		RenderSystem const* renderSystem;
+		RenderSystem* renderSystem;
 	};
 
 }

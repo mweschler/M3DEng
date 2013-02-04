@@ -9,6 +9,7 @@ namespace M3D{
 		Material(void);
 		~Material(void);
 		void setProgram(const GLuint program);
+		GLuint getProgram(void);
 	private:
 		GLuint program;
 	};

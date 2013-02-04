@@ -15,13 +15,15 @@ namespace M3D{
 		void setPosX(float x);
 		void setPosY(float y);
 		void setPosZ(float z);
-		void setMaterial(Material const* mat);
-		void setMesh(Mesh const* mesh);
+		void setMaterial(Material* mat);
+		void setMesh(Mesh* mesh);
 		void setVisible(bool visible);
+		Material* getMaterial(void);
+		Mesh* getMesh();
 	private:
 		glm::vec3 position;
-		Material const* material;
-		Mesh const* mesh;
+		Material* material;
+		Mesh* mesh;
 		bool visible;
 	};
 }

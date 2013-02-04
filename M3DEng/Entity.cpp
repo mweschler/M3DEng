@@ -30,15 +30,23 @@ namespace M3D{
 		this->position.z = z;
 	}
 
-	void Entity::setMaterial(Material const* mat){
+	void Entity::setMaterial(Material* mat){
 		this->material = mat;
 	}
 
-	void Entity::setMesh(Mesh const* mesh){
+	void Entity::setMesh(Mesh* mesh){
 		this->mesh = mesh;
 	}
 
 	void Entity::setVisible(bool visible){
 		this->visible = visible;
+	}
+
+	Material* Entity::getMaterial(void){
+		return this->material;
+	}
+
+	Mesh* Entity::getMesh(void){
+		return this->mesh;
 	}
 }

@@ -14,11 +14,20 @@ namespace M3D{
 		std::vector<glm::vec3>* getNormals(void);
 		std::vector<GLushort>* getElements(void);
 		void calculateNormals(void);
+		void setupBuffers(void);
+		const GLuint getVertsVBO(void);
+		const GLuint getNormalsVBO(void);
+		const GLuint getIBO(void);
+		const GLuint getVAO(void);
 	private:
 		bool normalsUpToDate;
 		std::vector<glm::vec4> verticies;
 		std::vector<glm::vec3> normals;
 		std::vector<GLushort> elements;
+		GLuint vbo_verts;
+		GLuint vbo_normals;
+		GLuint ibo;
+		GLuint vao;
 	};
 }
 

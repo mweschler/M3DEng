@@ -136,8 +136,8 @@ namespace M3D{
 			return NULL;
 		}
 		Mesh* mesh = new Mesh();
-		std::vector<glm::vec4> verticies = *mesh->getVerticies();
-		std::vector<GLushort> elements = *mesh->getElements();
+		std::vector<glm::vec4> *verticies = mesh->getVerticies();
+		std::vector<GLushort> *elements = mesh->getElements();
 
 		//parse file
 		std::string line;
@@ -151,7 +151,7 @@ namespace M3D{
 				stream >> vertex.z;
 				vertex.w = 1.0f;
 
-				verticies.push_back(vertex);
+				verticies->push_back(vertex);
 			} else if (line.substr(0,2) == "f "){
 				//found a face
 				std::istringstream stream(line.substr(2));
@@ -159,15 +159,15 @@ namespace M3D{
 				stream >> vert1;
 				stream >> vert2;
 				stream >> vert3;
-
+				std::cout<<"VERT INDICIES: "<<vert1<<" "<<vert2<<" "<<vert3<<std::endl;
 				//offset indicies to start at 0, not 1
 				vert1--;
 				vert2--;
 				vert3--;
 				
-				elements.push_back(vert1);
-				elements.push_back(vert2);
-				elements.push_back(vert3);
+				elements->push_back(vert1);
+				elements->push_back(vert2);
+				elements->push_back(vert3);
 			} else { 
 				//Only verticies and faces will be processed
 			}
@@ -176,6 +176,8 @@ namespace M3D{
 		file.close();
 
 		mesh->calculateNormals();
+
+		mesh->setupBuffers();
 		return mesh;
 	}
 }

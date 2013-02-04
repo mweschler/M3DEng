@@ -1,8 +1,14 @@
+#include <stdexcept>
+
 #include "Mesh.h"
 
 namespace M3D{
 	Mesh::Mesh(void){
 		normalsUpToDate = false;
+		vbo_verts = 0;
+		vbo_normals = 0;
+		ibo = 0;
+		vao = 0;
 	}
 
 	Mesh::~Mesh(void){
@@ -40,6 +46,54 @@ namespace M3D{
 
 	std::vector<GLushort>*  Mesh::getElements(void){
 		return &elements;
+	}
+
+	void Mesh::setupBuffers(void){
+		if(vbo_verts != 0 || vbo_normals != 0 || ibo != 0 || vao != 0){
+			throw std::runtime_error("Buffers already setup!");
+		}
+
+	int vertsize = sizeof(glm::vec4) * verticies.size();
+	glGenBuffers(1, &vbo_verts);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_verts);
+	glBufferData(GL_ARRAY_BUFFER, vertsize, &verticies[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &vbo_normals);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_normals);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * normals.size(), &normals[0], GL_STATIC_DRAW);
+
+
+	glGenBuffers(1, &ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * elements.size(), &elements[0], GL_STATIC_DRAW);
+	
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_verts);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	}
+
+	const GLuint Mesh::getVertsVBO(void) {
+		return this->vbo_verts;
+	}
+	
+	const GLuint Mesh::getNormalsVBO(void) {
+		return this->vbo_normals;
+	}
+
+	const GLuint Mesh::getIBO(void) {
+		return this->ibo;
+	}
+
+	const GLuint Mesh::getVAO(void) {
+		return this->vao;
 	}
 }
 

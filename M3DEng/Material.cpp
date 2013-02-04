@@ -12,4 +12,8 @@ namespace M3D{
 	void Material::setProgram(const GLuint program){
 		this->program = program;
 	}
+
+	GLuint Material::getProgram(void) {
+		return this->program;
+	}
 }

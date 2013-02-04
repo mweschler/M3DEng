@@ -1,9 +1,11 @@
 #include <stdexcept>
+#include <iostream>
 #include "SceneManager.h"
 
 namespace M3D{
 	SceneManager::SceneManager(void){
 		mainCamera = NULL;
+		initialized = false;
 	}
 
 
@@ -13,7 +15,7 @@ namespace M3D{
 			shutdown();
 	}
 
-	bool SceneManager::initialize(RenderSystem const* renderSystem){
+	bool SceneManager::initialize(RenderSystem* renderSystem){
 		if(initialized){
 			throw new std::runtime_error("Cannot initialize SceneManager, already initialized.");
 		}
@@ -21,7 +23,10 @@ namespace M3D{
 		if(renderSystem == NULL)
 			throw new std::runtime_error("RenderSystem cannot be null");
 
+		std::cout<<"DEBUG: SCENEMGR INIT START"<<std::endl;
+
 		this->renderSystem = renderSystem;
+		std::cout<<"DEBUG: RS SET"<<std::endl;
 		mainCamera = new Camera();
 		initialized = true;
 		
