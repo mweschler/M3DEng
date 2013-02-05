@@ -27,6 +27,8 @@ namespace M3D{
 		}
 
 		cout<<"Starting initialization.\n";
+		screenWidth = width;
+		screenHeight = height;
 
 		if(glfwInit() == GL_FALSE){
 			cout<<"Could not initialize GLFW!\n";
@@ -67,7 +69,7 @@ namespace M3D{
 
 		cout<<"ResourceManager initialized.\n";
 
-		if(!renderSystem.initialize()){
+		if(!renderSystem.initialize(screenWidth, screenHeight)){
 			cout<<"RenderSystem initialization failed!\n";
 			glfwTerminate();
 			return false;
@@ -107,22 +109,41 @@ namespace M3D{
 
 		GLuint prog = resourceManager.createProgram(shaders);
 
+		
 		Mesh* mesh = resourceManager.loadObjFile("decocube_nf4k.obj");
 		if(mesh == NULL){
 			std::cout<<"Mesh was Null, shuting down\n";
 			//shutdown();
 		}
+		
+		/*
+		Mesh* mesh = new Mesh();
+		std::vector<glm::vec4>* verts = mesh->getVerticies();
+		std::vector<GLushort>* faces = mesh->getElements();
+
+		verts->push_back(glm::vec4(0.75f, 0.75f, 0.0f, 1.0f));
+		verts->push_back(glm::vec4(0.75f, -0.75f, 0.0f, 1.0f));
+		verts->push_back(glm::vec4(-0.75f, -0.75f, 0.0f, 1.0f));
+
+		faces->push_back(0);
+		faces->push_back(1);
+		faces->push_back(2);
+
+		mesh->calculateNormals();
+		mesh->setupBuffers();
+		*/
 		Material mat;
 		mat.setProgram(prog);
 		Entity entity;
 		entity.setMaterial(&mat);
 		entity.setMesh(mesh);
+		
 		glEnable(GL_DEPTH_TEST); // enable depth-testing
 		glDepthMask(GL_TRUE); // turn back on
 		glDepthFunc(GL_LESS);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
-		glFrontFace(GL_CCW);
+		glFrontFace(GL_CW);
 
 		while(running){
 			glClear( GL_COLOR_BUFFER_BIT );

@@ -8,7 +8,6 @@ namespace M3D{
 		vbo_verts = 0;
 		vbo_normals = 0;
 		ibo = 0;
-		vao = 0;
 	}
 
 	Mesh::~Mesh(void){
@@ -49,7 +48,7 @@ namespace M3D{
 	}
 
 	void Mesh::setupBuffers(void){
-		if(vbo_verts != 0 || vbo_normals != 0 || ibo != 0 || vao != 0){
+		if(vbo_verts != 0 || vbo_normals != 0 || ibo != 0 ){
 			throw std::runtime_error("Buffers already setup!");
 		}
 
@@ -68,15 +67,12 @@ namespace M3D{
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * elements.size(), &elements[0], GL_STATIC_DRAW);
 	
 
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_verts);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, vbo_verts);
+	//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
 
 	}
 
@@ -91,9 +87,10 @@ namespace M3D{
 	const GLuint Mesh::getIBO(void) {
 		return this->ibo;
 	}
-
+	/*
 	const GLuint Mesh::getVAO(void) {
 		return this->vao;
 	}
+	*/
 }
 

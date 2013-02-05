@@ -18,7 +18,6 @@ namespace M3D{
 		const GLuint getVertsVBO(void);
 		const GLuint getNormalsVBO(void);
 		const GLuint getIBO(void);
-		const GLuint getVAO(void);
 	private:
 		bool normalsUpToDate;
 		std::vector<glm::vec4> verticies;
@@ -27,7 +26,6 @@ namespace M3D{
 		GLuint vbo_verts;
 		GLuint vbo_normals;
 		GLuint ibo;
-		GLuint vao;
 	};
 }
 

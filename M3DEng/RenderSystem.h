@@ -8,7 +8,7 @@ namespace M3D{
 	public:
 		RenderSystem(void);
 		~RenderSystem(void);
-		bool initialize(void);
+		bool initialize(int screenWidth, int screenHeight);
 		void shutdown(void);
 		void renderEntity(Entity* entity);
 	private:

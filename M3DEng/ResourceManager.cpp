@@ -159,7 +159,7 @@ namespace M3D{
 				stream >> vert1;
 				stream >> vert2;
 				stream >> vert3;
-				std::cout<<"VERT INDICIES: "<<vert1<<" "<<vert2<<" "<<vert3<<std::endl;
+
 				//offset indicies to start at 0, not 1
 				vert1--;
 				vert2--;

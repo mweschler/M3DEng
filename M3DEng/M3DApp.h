@@ -19,6 +19,8 @@ namespace M3D{
 		ResourceManager resourceManager;
 		SceneManager sceneManager;
 		RenderSystem renderSystem;
+		int screenWidth;
+		int screenHeight;
 	};
 }
 
