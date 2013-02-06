@@ -18,6 +18,7 @@ namespace M3D{
 		void setMaterial(Material* mat);
 		void setMesh(Mesh* mesh);
 		void setVisible(bool visible);
+		glm::vec3 getPosition(void);
 		Material* getMaterial(void);
 		Mesh* getMesh();
 	private:

@@ -1,3 +1,6 @@
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 #include "RenderSystem.h"
 
 namespace M3D{
@@ -9,15 +12,29 @@ namespace M3D{
 	}
 
 	bool RenderSystem::initialize(int screenWidth, int screenHeight){
-		float ratio = 1.0 * screenWidth / screenHeight;
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
+		//glEnable(GL_DEPTH_TEST); // enable depth-testing
+		//glDepthMask(GL_TRUE); // turn back on
+		//glDepthFunc(GL_LEQUAL);
+		//glDepthRange(0.0f, 1.0f);
 
+		//glEnable(GL_CULL_FACE);
+		//glCullFace(GL_BACK);
+		//glFrontFace(GL_CW);
+
+		float ratio = 1.0 * screenWidth / screenHeight;
+		perspective = glm::mat4(1.0);;
+		perspective *= glm::perspective(45.0f , ratio, 0.1f, 100.0f);
+		glm::mat4 model = glm::mat4(1.0);
+			
+		model *= glm::lookAt( glm::vec3(2.0f,2.0f, -10.0f), 
+		                 glm::vec3(0.0f,0.0f,-1.0f), 
+                         glm::vec3(0.0f,1.0f, 0.0f));
+		perspective = perspective * model;
+		//std::cout<<"MVP: "<<glm::value_ptr(perspective)[0]<<" "<<glm::value_ptr(perspective)[1]<<" "<<glm::value_ptr(perspective)[2];
 		glViewport(0, 0, screenWidth, screenHeight);
 
 		//gluPerspective(45,ratio, 1, 1000);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+
 		initialized = true;
 		return true;
 	}
@@ -31,10 +48,17 @@ namespace M3D{
 		Mesh* mesh = entity->getMesh();
 
 		glUseProgram(material->getProgram());
+
+		GLint projLoc = glGetUniformLocation(material->getProgram(), "perspective");
+		if(projLoc == -1){
+			std::cout<<"Invlalid uniform location!"<<std::endl;
+		}
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(this->perspective));
 		
+		GLint posLoc = glGetAttribLocation(material->getProgram(), "position");
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->getVertsVBO());
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(posLoc);
+		glVertexAttribPointer(posLoc, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getIBO());

@@ -49,4 +49,8 @@ namespace M3D{
 	Mesh* Entity::getMesh(void){
 		return this->mesh;
 	}
+
+	glm::vec3 Entity::getPosition(void){
+		return glm::vec3(this->position);
+	}
 }

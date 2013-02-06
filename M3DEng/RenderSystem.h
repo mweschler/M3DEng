@@ -13,6 +13,7 @@ namespace M3D{
 		void renderEntity(Entity* entity);
 	private:
 		bool initialized;
+		glm::mat4 perspective;
 	};
 
 }

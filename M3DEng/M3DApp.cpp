@@ -37,7 +37,7 @@ namespace M3D{
 
 		cout<<"GLFW has been initialized.\n";
 
-		if(glfwOpenWindow(width, height, 0, 0, 0 ,0 ,0 ,0 ,GLFW_WINDOW) == GL_FALSE){
+		if(glfwOpenWindow(width, height,0 , 0, 0 ,0 ,16 ,0 ,GLFW_WINDOW) == GL_FALSE){
 			cout<<"Could not create window!\n";
 			glfwTerminate();
 			return false;
@@ -54,12 +54,12 @@ namespace M3D{
 		cout<<"GLEW has been initialized\n";
 
 		if(!GLEW_VERSION_2_1){
-			cout<<"OpenGL version 2.0 must be supported!\n";
+			cout<<"OpenGL version 2.1 must be supported!\n";
 			glfwTerminate();
 			return false;
 		}
 
-		cout<<"OpenGL 2.0 is supported\n";
+		cout<<"OpenGL 2.1 is supported\n";
 
 		if(!resourceManager.initialize()){
 			cout<<"ResourceManager initialization failed!\n";
@@ -138,15 +138,10 @@ namespace M3D{
 		entity.setMaterial(&mat);
 		entity.setMesh(mesh);
 		
-		glEnable(GL_DEPTH_TEST); // enable depth-testing
-		glDepthMask(GL_TRUE); // turn back on
-		glDepthFunc(GL_LESS);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		glFrontFace(GL_CW);
+		
 
 		while(running){
-			glClear( GL_COLOR_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			// Swap front and back rendering buffers
 			renderSystem.renderEntity(&entity);
 			glfwSwapBuffers();
