@@ -8,6 +8,10 @@ namespace M3D{
 	public:
 		Camera(void);
 		~Camera(void);
+		glm::vec3 getTarget(void) const;
+		void setTarget(const glm::vec3 newTarget);
+	private:
+		glm::vec3 target;
 	};
 }
 

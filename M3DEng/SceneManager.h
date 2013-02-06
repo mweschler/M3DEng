@@ -17,9 +17,10 @@ namespace M3D{
 		void renderScene(void);
 		void setMainCamera(Camera *camera);
 		Camera* getMainCamera(void);
+		void addEntity(Entity* entity);
 	private:
 		bool initialized;
-		std::vector<Entity> entities;
+		std::vector<Entity*> entities;
 		Camera *mainCamera;
 		RenderSystem* renderSystem;
 	};

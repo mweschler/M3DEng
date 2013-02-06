@@ -137,13 +137,17 @@ namespace M3D{
 		Entity entity;
 		entity.setMaterial(&mat);
 		entity.setMesh(mesh);
+
+		sceneManager.addEntity(&entity);
 		
-		
+		Camera *camera = sceneManager.getMainCamera();
+		camera->setPostion(glm::vec3(2.0f, 2.0f, -10.0f));
+		camera->setTarget(glm::vec3(0.0f, 0.0f, -1.0f));
 
 		while(running){
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			// Swap front and back rendering buffers
-			renderSystem.renderEntity(&entity);
+			sceneManager.renderScene();
 			glfwSwapBuffers();
 
 

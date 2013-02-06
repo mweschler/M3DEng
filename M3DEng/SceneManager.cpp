@@ -44,9 +44,9 @@ namespace M3D{
 	}
 
 	void SceneManager::renderScene(){
-		for(std::vector<Entity>::iterator it = entities.begin();
+		for(std::vector<Entity*>::iterator it = entities.begin();
 			it != entities.end(); ++it){
-				renderSystem->renderEntity(&(*it));
+				renderSystem->renderEntity(*it, this->mainCamera);
 		}
 	}
 
@@ -59,5 +59,9 @@ namespace M3D{
 
 	Camera* SceneManager::getMainCamera(void){
 		return this->mainCamera;
+	}
+
+	void SceneManager::addEntity(Entity* entity){
+		entities.push_back(entity);
 	}
 }

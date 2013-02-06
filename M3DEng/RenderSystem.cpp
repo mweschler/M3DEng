@@ -24,12 +24,12 @@ namespace M3D{
 		float ratio = 1.0 * screenWidth / screenHeight;
 		perspective = glm::mat4(1.0);;
 		perspective *= glm::perspective(45.0f , ratio, 0.1f, 100.0f);
-		glm::mat4 model = glm::mat4(1.0);
+		/*glm::mat4 model = glm::mat4(1.0);
 			
 		model *= glm::lookAt( glm::vec3(2.0f,2.0f, -10.0f), 
 		                 glm::vec3(0.0f,0.0f,-1.0f), 
-                         glm::vec3(0.0f,1.0f, 0.0f));
-		perspective = perspective * model;
+                         glm::vec3(0.0f,1.0f, 0.0f));*/
+		perspective = perspective;
 		//std::cout<<"MVP: "<<glm::value_ptr(perspective)[0]<<" "<<glm::value_ptr(perspective)[1]<<" "<<glm::value_ptr(perspective)[2];
 		glViewport(0, 0, screenWidth, screenHeight);
 
@@ -43,9 +43,13 @@ namespace M3D{
 		initialized = false;
 	}
 
-	void RenderSystem::renderEntity(Entity* entity){
+	void RenderSystem::renderEntity(Entity* entity, Camera* camera){
 		Material* material = entity->getMaterial();
 		Mesh* mesh = entity->getMesh();
+		glm::mat4 modelToWorld = entity->getModelViewMatrix();
+		glm::mat4 worldToCamera = glm::lookAt( camera->getPosition(), camera->getTarget(), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 cameraToClip = this->perspective;
+		glm::mat4 modelToClip = cameraToClip * worldToCamera * modelToWorld;
 
 		glUseProgram(material->getProgram());
 
@@ -53,7 +57,7 @@ namespace M3D{
 		if(projLoc == -1){
 			std::cout<<"Invlalid uniform location!"<<std::endl;
 		}
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(this->perspective));
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(modelToClip));
 		
 		GLint posLoc = glGetAttribLocation(material->getProgram(), "position");
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->getVertsVBO());
