@@ -8,7 +8,7 @@ uniform mat4 modelToClip;
 uniform vec3 lightDirection;
 uniform vec4 lightIntensity;
 
-varying out vec4 color;
+varying vec4 color;
 
 void main(void){
 	gl_Position = modelToClip * position;
