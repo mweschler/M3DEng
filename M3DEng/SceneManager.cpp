@@ -46,6 +46,7 @@ namespace M3D{
 	void SceneManager::renderScene(){
 		for(std::vector<Entity*>::iterator it = entities.begin();
 			it != entities.end(); ++it){
+			if((*it)->isVisible())
 				renderSystem->renderEntity(*it, this->mainCamera);
 		}
 	}

@@ -11,7 +11,7 @@ namespace M3D{
 		Entity(void);
 		~Entity(void);
 		void setPosition(float x, float y, float z);
-		void setPostion(const glm::vec3 newPos);
+		void setPosition(const glm::vec3 newPos);
 		void setRotation(const glm::vec3 newRot);
 		void setScale(const glm::vec3 newScale);
 		void setPosX(float x);
@@ -26,6 +26,7 @@ namespace M3D{
 		Material* getMaterial(void);
 		glm::mat4 getModelViewMatrix(void) const;
 		Mesh* getMesh();
+		bool isVisible(void) const;
 	private:
 		void updateModelMatrix(void);
 		glm::vec3 position;

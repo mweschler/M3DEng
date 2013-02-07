@@ -2,6 +2,7 @@
 #include <GL\glfw.h>
 #include <stdlib.h>
 #include <iostream>
+#include <cmath>
 
 #include "M3DApp.h"
 #include "ResourceManager.h"
@@ -137,19 +138,28 @@ namespace M3D{
 		Entity entity;
 		entity.setMaterial(&mat);
 		entity.setMesh(mesh);
+		entity.setVisible(true);
 
 		sceneManager.addEntity(&entity);
 		
 		Camera *camera = sceneManager.getMainCamera();
-		camera->setPostion(glm::vec3(2.0f, 2.0f, -10.0f));
-		camera->setTarget(glm::vec3(0.0f, 0.0f, -1.0f));
-
+		camera->setPosition(glm::vec3(10.0f, 5.0f, 0.0f));
+		camera->setTarget(glm::vec3(0.5f, 0.0f, 0.5f));
+		
+		float camDeg = 0;
 		while(running){
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			// Swap front and back rendering buffers
 			sceneManager.renderScene();
 			glfwSwapBuffers();
-
+			glm::vec3 camPos = camera->getPosition();
+			camDeg += .001;
+			if(camDeg >= 360)
+				camDeg = 0;
+			camPos.x = cos(camDeg) * 10;
+			camPos.z = sin(camDeg) * 10;
+			camera->setPosition(camPos);
+			
 
 			if(glfwGetKey( GLFW_KEY_ESC) || !glfwGetWindowParam( GLFW_OPENED )){
 				delete mesh;

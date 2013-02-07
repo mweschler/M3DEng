@@ -5,7 +5,7 @@ namespace M3D{
 	Entity::Entity(void){
 		this->position = glm::vec3(0.0f, 0.0f, 0.0f);
 		this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-		this->scale = glm::vec3(0.0f, 0.0f, 0.0f);
+		this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 		updateModelMatrix();
 		this->visible = false;
 	}
@@ -19,7 +19,7 @@ namespace M3D{
 		updateModelMatrix();
 	}
 
-	void Entity::setPostion(const glm::vec3 newPos){
+	void Entity::setPosition(const glm::vec3 newPos){
 		this->position = glm::vec3(newPos);
 		updateModelMatrix();
 	}
@@ -94,5 +94,9 @@ namespace M3D{
 
 		this->modelViewMatrix = view * model;
 
+	}
+
+	bool Entity::isVisible(void) const{
+		return this->visible;
 	}
 }

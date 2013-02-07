@@ -53,7 +53,7 @@ namespace M3D{
 
 		glUseProgram(material->getProgram());
 
-		GLint projLoc = glGetUniformLocation(material->getProgram(), "perspective");
+		GLint projLoc = glGetUniformLocation(material->getProgram(), "modelToClip");
 		if(projLoc == -1){
 			std::cout<<"Invlalid uniform location!"<<std::endl;
 		}
