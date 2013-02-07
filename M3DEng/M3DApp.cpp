@@ -102,8 +102,8 @@ namespace M3D{
 		running = true;
 		//do stuff
 
-		GLuint vert = resourceManager.loadShader(GL_VERTEX_SHADER, "basic.vert");
-		GLuint frag = resourceManager.loadShader(GL_FRAGMENT_SHADER, "basic.frag");
+		GLuint vert = resourceManager.loadShader(GL_VERTEX_SHADER, "light_120.vert");
+		GLuint frag = resourceManager.loadShader(GL_FRAGMENT_SHADER, "light_120.frag");
 		std::vector<GLuint> shaders;
 		shaders.push_back(vert);
 		shaders.push_back(frag);
@@ -116,7 +116,7 @@ namespace M3D{
 			std::cout<<"Mesh was Null, shuting down\n";
 			//shutdown();
 		}
-		
+		mesh->setOriginOffset(glm::vec3(-0.5f, -0.5f, -0.5f));
 		/*
 		Mesh* mesh = new Mesh();
 		std::vector<glm::vec4>* verts = mesh->getVerticies();
@@ -139,12 +139,13 @@ namespace M3D{
 		entity.setMaterial(&mat);
 		entity.setMesh(mesh);
 		entity.setVisible(true);
+		//entity.setPosition(glm::vec3(-0.5f, -0.5f, -0.5f));
 
 		sceneManager.addEntity(&entity);
 		
 		Camera *camera = sceneManager.getMainCamera();
-		camera->setPosition(glm::vec3(10.0f, 5.0f, 0.0f));
-		camera->setTarget(glm::vec3(0.5f, 0.0f, 0.5f));
+		camera->setPosition(glm::vec3(2.0f, 1.0f, 0.0f));
+		camera->setTarget(glm::vec3(0.0f, 0.0f, 0.0f));
 		
 		float camDeg = 0;
 		while(running){
@@ -153,11 +154,11 @@ namespace M3D{
 			sceneManager.renderScene();
 			glfwSwapBuffers();
 			glm::vec3 camPos = camera->getPosition();
-			camDeg += .001;
+			camDeg += .01;
 			if(camDeg >= 360)
 				camDeg = 0;
-			camPos.x = cos(camDeg) * 10;
-			camPos.z = sin(camDeg) * 10;
+			camPos.x = cos(camDeg) * 2;
+			camPos.z = sin(camDeg) * 2;
 			camera->setPosition(camPos);
 			
 

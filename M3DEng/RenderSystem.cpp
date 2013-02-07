@@ -12,14 +12,14 @@ namespace M3D{
 	}
 
 	bool RenderSystem::initialize(int screenWidth, int screenHeight){
-		//glEnable(GL_DEPTH_TEST); // enable depth-testing
-		//glDepthMask(GL_TRUE); // turn back on
-		//glDepthFunc(GL_LEQUAL);
-		//glDepthRange(0.0f, 1.0f);
+		glEnable(GL_DEPTH_TEST); // enable depth-testing
+		glDepthMask(GL_TRUE); // turn back on
+		glDepthFunc(GL_LEQUAL);
+		glDepthRange(0.0f, 1.0f);
 
-		//glEnable(GL_CULL_FACE);
-		//glCullFace(GL_BACK);
-		//glFrontFace(GL_CW);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CW);
 
 		float ratio = 1.0 * screenWidth / screenHeight;
 		perspective = glm::mat4(1.0);;
@@ -55,9 +55,13 @@ namespace M3D{
 
 		GLint projLoc = glGetUniformLocation(material->getProgram(), "modelToClip");
 		if(projLoc == -1){
-			std::cout<<"Invlalid uniform location!"<<std::endl;
+			//std::cout<<"Invlalid uniform location!"<<std::endl;
 		}
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(modelToClip));
+
+		glm::vec4 diffuseColor = material->getDiffuseColor();
+		GLint diffLoc = glGetUniformLocation(material->getProgram(), "diffuseColor");
+		glUniform4fv(diffLoc, 1, glm::value_ptr(diffuseColor));
 		
 		GLint posLoc = glGetAttribLocation(material->getProgram(), "position");
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->getVertsVBO());

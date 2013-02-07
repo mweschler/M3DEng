@@ -3,14 +3,15 @@
 #include "Mesh.h"
 
 namespace M3D{
-	Mesh::Mesh(void){
+	Mesh::Mesh(){
 		normalsUpToDate = false;
 		vbo_verts = 0;
 		vbo_normals = 0;
 		ibo = 0;
+		this->originOffset = glm::vec3(0.0f, 0.0f, 0.0f);
 	}
 
-	Mesh::~Mesh(void){
+	Mesh::~Mesh(){
 	
 	}
 	
@@ -87,6 +88,15 @@ namespace M3D{
 	const GLuint Mesh::getIBO(void) {
 		return this->ibo;
 	}
+
+	void Mesh::setOriginOffset(const glm::vec3 offset){
+		this->originOffset = glm::vec3(offset);
+	}
+
+	glm::vec3 Mesh::getOriginOffset(void) const{
+		return glm::vec3(this->originOffset);
+	}
+
 	/*
 	const GLuint Mesh::getVAO(void) {
 		return this->vao;

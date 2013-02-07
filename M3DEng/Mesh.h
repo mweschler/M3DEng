@@ -8,16 +8,18 @@
 namespace M3D{
 	class Mesh{
 	public:
-		Mesh(void);
-		~Mesh(void);
+		Mesh();
+		~Mesh();
 		std::vector<glm::vec4>* getVerticies(void);
 		std::vector<glm::vec3>* getNormals(void);
 		std::vector<GLushort>* getElements(void);
 		void calculateNormals(void);
 		void setupBuffers(void);
+		void setOriginOffset(const glm::vec3 offset);
 		const GLuint getVertsVBO(void);
 		const GLuint getNormalsVBO(void);
 		const GLuint getIBO(void);
+		glm::vec3 getOriginOffset(void) const;
 	private:
 		bool normalsUpToDate;
 		std::vector<glm::vec4> verticies;
@@ -26,6 +28,7 @@ namespace M3D{
 		GLuint vbo_verts;
 		GLuint vbo_normals;
 		GLuint ibo;
+		glm::vec3 originOffset;
 	};
 }
 

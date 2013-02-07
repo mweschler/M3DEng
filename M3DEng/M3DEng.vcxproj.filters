@@ -80,5 +80,11 @@
     <None Include="basic.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="light_120.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="light_120.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

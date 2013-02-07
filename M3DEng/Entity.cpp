@@ -6,8 +6,12 @@ namespace M3D{
 		this->position = glm::vec3(0.0f, 0.0f, 0.0f);
 		this->rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 		this->scale = glm::vec3(1.0f, 1.0f, 1.0f);
-		updateModelMatrix();
 		this->visible = false;
+		this->mesh = NULL;
+		this->material = NULL;
+
+		updateModelMatrix();
+
 	}
 
 	Entity::~Entity(void){
@@ -55,6 +59,7 @@ namespace M3D{
 
 	void Entity::setMesh(Mesh* mesh){
 		this->mesh = mesh;
+		updateModelMatrix();
 	}
 
 	void Entity::setVisible(bool visible){
@@ -86,7 +91,14 @@ namespace M3D{
 	}
 	
 	void Entity::updateModelMatrix(void){
-		glm::mat4 translation = glm::translate(glm::mat4(1.0f), this->position);
+		glm::vec3 offset;
+		if(mesh != NULL){
+			offset = mesh->getOriginOffset();
+		}else{
+			offset = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
+		glm::vec3 combTranslation = this->position + offset;
+		glm::mat4 translation = glm::translate(glm::mat4(1.0f), combTranslation);
 		glm::mat4 rotateX = glm::rotate(translation, this->rotation.x, glm::vec3(1.0, 0.0, 0.0));
 		glm::mat4 rotateY = glm::rotate(rotateX, this->rotation.y, glm::vec3(0.0, 1.0, 0.0));
 		glm::mat4 view = glm::rotate(rotateY, this->rotation.z, glm::vec3(0.0, 0.0, 1.0));
