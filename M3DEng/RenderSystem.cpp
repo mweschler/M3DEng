@@ -19,7 +19,7 @@ namespace M3D{
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
-		glFrontFace(GL_CW);
+		glFrontFace(GL_CCW);
 
 		float ratio = 1.0 * screenWidth / screenHeight;
 		perspective = glm::mat4(1.0);;
@@ -50,7 +50,7 @@ namespace M3D{
 		glm::mat4 worldToCamera = glm::lookAt( camera->getPosition(), camera->getTarget(), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 cameraToClip = this->perspective;
 		glm::mat4 modelToClip = cameraToClip * worldToCamera * modelToWorld;
-
+		
 		glUseProgram(material->getProgram());
 
 		GLint projLoc = glGetUniformLocation(material->getProgram(), "modelToClip");
@@ -58,6 +58,9 @@ namespace M3D{
 			//std::cout<<"Invlalid uniform location!"<<std::endl;
 		}
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(modelToClip));
+
+		GLint MTCLoc = glGetUniformLocation(material->getProgram(), "modelToCamera");
+		glUniformMatrix3fv(MTCLoc, 1, GL_FALSE, glm::value_ptr(glm::mat3(worldToCamera)));
 
 		glm::vec4 diffuseColor = material->getDiffuseColor();
 		GLint diffLoc = glGetUniformLocation(material->getProgram(), "diffuseColor");
@@ -67,6 +70,18 @@ namespace M3D{
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->getVertsVBO());
 		glEnableVertexAttribArray(posLoc);
 		glVertexAttribPointer(posLoc, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+		GLint normLoc = glGetAttribLocation(material->getProgram(), "normal");
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->getNormalsVBO());
+		glEnableVertexAttribArray(normLoc);
+		glVertexAttribPointer(normLoc, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glm::vec4 lightDir = glm::vec4(10.0f, 10.0f, 10.0f, 1.0f);
+		//lightDir = -lightDir;
+		lightDir = worldToCamera * lightDir;
+		
+		GLint lightDirLoc = glGetUniformLocation(material->getProgram(), "lightDirection");
+		glUniform3fv(lightDirLoc, 1, glm::value_ptr(lightDir));
 
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getIBO());

@@ -149,6 +149,7 @@ namespace M3D{
 		
 		float camDeg = 0;
 		while(running){
+			glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			// Swap front and back rendering buffers
 			sceneManager.renderScene();
