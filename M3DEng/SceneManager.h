@@ -18,11 +18,20 @@ namespace M3D{
 		void setMainCamera(Camera *camera);
 		Camera* getMainCamera(void);
 		void addEntity(Entity* entity);
+		void setGlobalLightDir(const glm::vec3 dir);
+		void setGlobalLightIntensity(const glm::vec4 intensity);
+		void setAmbientLightIntensity(const glm::vec4 intensity);
+		glm::vec3 getGlobalLightDir(void) const;
+		glm::vec4 getGlobalLightIntensity(void) const;
+		glm::vec4 getAambientLightIntensity(void) const;
 	private:
 		bool initialized;
 		std::vector<Entity*> entities;
 		Camera *mainCamera;
 		RenderSystem* renderSystem;
+		glm::vec3 globalLightDir;
+		glm::vec4 globalLightIntensity;
+		glm::vec4 ambientLightIntensity;
 	};
 
 }

@@ -110,6 +110,10 @@ namespace M3D{
 
 		GLuint prog = resourceManager.createProgram(shaders);
 
+		sceneManager.setGlobalLightDir(glm::vec3(-1.0f));
+		sceneManager.setGlobalLightIntensity(glm::vec4(1.0f));
+		sceneManager.setAmbientLightIntensity(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+
 		
 		Mesh* mesh = resourceManager.loadObjFile("decocube_nf4k.obj");
 		if(mesh == NULL){
@@ -135,6 +139,7 @@ namespace M3D{
 		*/
 		Material mat;
 		mat.setProgram(prog);
+		mat.setDiffuseColor(glm::vec4(0.0, 0.7f, 0.0f, 1.0f));
 		Entity entity;
 		entity.setMaterial(&mat);
 		entity.setMesh(mesh);
@@ -146,6 +151,8 @@ namespace M3D{
 		Camera *camera = sceneManager.getMainCamera();
 		camera->setPosition(glm::vec3(2.0f, 1.0f, 0.0f));
 		camera->setTarget(glm::vec3(0.0f, 0.0f, 0.0f));
+
+		float dir = 1;
 		
 		float camDeg = 0;
 		while(running){
@@ -154,13 +161,41 @@ namespace M3D{
 			// Swap front and back rendering buffers
 			sceneManager.renderScene();
 			glfwSwapBuffers();
+			
+			/*
+			glm::vec3 pos = entity.getPosition();
+			if(pos.y > 2 || pos.y < -2)
+				dir = -dir;
+			
+			pos.y += 0.0001 * dir;
+			entity.setPosition(pos);
+			*/
+
+			
+			/*
+			glm::vec3 scale = entity.getScale();
+			if(scale.x > 2 || scale.x <0.5)
+				dir = -dir;
+
+			scale.x += 0.0001 * dir;
+			entity.setScale(scale);
+			*/
+			
 			glm::vec3 camPos = camera->getPosition();
-			camDeg += .01;
+			camDeg += .0001;
 			if(camDeg >= 360)
 				camDeg = 0;
 			camPos.x = cos(camDeg) * 2;
 			camPos.z = sin(camDeg) * 2;
 			camera->setPosition(camPos);
+
+			/*glm::vec3 entityRot = entity.getRotation();
+			camDeg += .01;
+			if(camDeg >= 360)
+				camDeg = 0;
+			entityRot.y = camDeg;
+			
+			entity.setRotation(entityRot); */
 			
 
 			if(glfwGetKey( GLFW_KEY_ESC) || !glfwGetWindowParam( GLFW_OPENED )){
