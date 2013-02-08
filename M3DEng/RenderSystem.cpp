@@ -69,8 +69,8 @@ namespace M3D{
 		if(scale.x != scale.y || scale.x != scale.z)
 			modelToCamera = glm::transpose(glm::inverse(modelToCamera));
 
-		GLint MTCLoc = glGetUniformLocation(material->getProgram(), "modelToCamera");
-		glUniformMatrix3fv(MTCLoc, 1, GL_FALSE, glm::value_ptr(modelToCamera));
+		//GLint MTCLoc = glGetUniformLocation(material->getProgram(), "modelToCamera");
+		//glUniformMatrix3fv(MTCLoc, 1, GL_FALSE, glm::value_ptr(modelToCamera));
 
 		//set diffuseColor
 		glm::vec4 diffuseColor = material->getDiffuseColor();
@@ -90,7 +90,8 @@ namespace M3D{
 		glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		//get light dir and prepare it for uniform
-		glm::vec3 lightDir = glm::mat3(worldToCamera) * globalLightDir;
+		glm::mat3 worldToModel = glm::mat3(glm::inverse(modelToWorld));
+		glm::vec3 lightDir = worldToModel * globalLightDir;
 		lightDir = glm::normalize(lightDir);
 
 		//set global light direction uniform
