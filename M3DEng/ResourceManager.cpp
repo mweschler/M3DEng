@@ -126,6 +126,27 @@ namespace M3D{
 		return program;
 	}
 
+	void parseStringPart(std::string data,GLshort &vertexIndex, GLshort &normalIndex){
+		//find vertex index section
+		int position = data.find("/");
+		if(position = std::string::npos){
+			std::istringstream vertstream(data);
+			vertstream >> vertexIndex;
+			normalIndex = 0;
+			return;
+		} else {
+			std::istringstream vertstream(data.substr(0,position));
+			vertstream >> vertexIndex;
+
+			position = data.find("/", position);
+			//ignore texture index
+
+			//rest is normal index;
+			position = data.find("/", position);
+			std::istringstream normstream(data.substr(position + 1));
+			normstream >> normalIndex;
+		}
+	}
 
 	Mesh* ResourceManager::loadObjFile(const std::string filename){
 		std::ifstream file;
@@ -138,6 +159,10 @@ namespace M3D{
 		Mesh* mesh = new Mesh();
 		std::vector<glm::vec4> *verticies = mesh->getVerticies();
 		std::vector<GLushort> *elements = mesh->getElements();
+		std::vector<glm::vec3> *normals = mesh->getNormals();
+		std::vector<glm::vec3> normalTemp;
+		std::vector<GLushort> normalIndexs;
+		bool normalsIncluded = false;
 
 		//parse file
 		std::string line;
@@ -152,30 +177,51 @@ namespace M3D{
 				vertex.w = 1.0f;
 
 				verticies->push_back(vertex);
+			} else if(line.substr(0,3) == "vn "){
+				normalsIncluded = true;
+				std::istringstream stream(line.substr(3));
+				glm::vec3 normal;
+				stream >> normal.x;
+				stream >> normal.y;
+				stream >> normal.z;
+
+				normalTemp.push_back(normal);
 			} else if (line.substr(0,2) == "f "){
 				//found a face
-				std::istringstream stream(line.substr(2));
-				GLshort vert1, vert2, vert3;
-				stream >> vert1;
-				stream >> vert2;
-				stream >> vert3;
+				
+				GLshort vert1, vert2, vert3, norm1, norm2, norm3;
+				int position = line.find(" ", 3);
+				std::string sub = line.substr(2, position - 1);
+				parseStringPart(sub, vert1, norm1);
+				int nextSpace = line.find(" ", position + 1);
+				
+				parseStringPart(line.substr(position + 1, nextSpace - position - 1), vert2, norm2);
+				parseStringPart(line.substr(nextSpace + 1), vert3, norm3);
 
 				//offset indicies to start at 0, not 1
 				vert1--;
 				vert2--;
 				vert3--;
+				norm1--;
+				norm2--;
+				norm3--;
+				if(norm1 >0)
+					normalsIncluded = true;
 				
 				elements->push_back(vert1);
 				elements->push_back(vert2);
 				elements->push_back(vert3);
+				normalIndexs.push_back(norm1);
+				normalIndexs.push_back(norm2);
+				normalIndexs.push_back(norm3);
 			} else { 
 				//Only verticies and faces will be processed
 			}
 		}
 
 		file.close();
-
-		mesh->calculateNormals();
+		if(!normalsIncluded)
+			mesh->calculateNormals();
 
 		mesh->setupBuffers();
 		return mesh;

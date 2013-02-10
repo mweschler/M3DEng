@@ -14,6 +14,16 @@ namespace M3D{
 	Mesh::~Mesh(){
 	
 	}
+
+	void setNormal(std::vector<glm::vec3> &normals, std::vector<GLshort> elements, glm::vec3 normal, int eleIndex){
+		
+		if(normals[elements[eleIndex]] == glm::vec3(0.0f)){
+			normals[elements[eleIndex]] = normal;
+		} else if(normals[elements[eleIndex]] != normal)
+		{
+			glm::vec4 vert = v
+		}
+	}
 	
 	void Mesh::calculateNormals(void)
 	{
@@ -27,12 +37,9 @@ namespace M3D{
 			glm::vec3 vert3 = glm::vec3(verticies[elements[i + 2]]);
 
 			//calculate normal for this face
-			glm::vec3 normal = glm::normalize(glm::cross(vert3 - vert1, vert2 - vert1));
-
+			glm::vec3 normal = glm::normalize(glm::cross(vert3 - vert1, vert2 - vert1));	
 			//apply normal for each vert index;
-			normals[elements[i]] = normal;
-			normals[elements[i + 1]] = normal;
-			normals[elements[i + 2]] = normal;
+			
 		}
 	}
 
