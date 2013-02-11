@@ -100,13 +100,13 @@ namespace M3D{
 		
 		glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f), this->rotation.x, glm::vec3(1.0, 0.0, 0.0));
 		glm::mat4 rotateY = glm::rotate(rotateX, this->rotation.y, glm::vec3(0.0, 1.0, 0.0));
-		glm::mat4 view = glm::rotate(rotateY, this->rotation.z, glm::vec3(0.0, 0.0, 1.0));
-		glm::mat4 scale = glm::scale(glm::mat4(1.0f), this->scale);
+		glm::mat4 rotateZ = glm::rotate(rotateY, this->rotation.z, glm::vec3(0.0, 0.0, 1.0));
+		glm::mat4 model = glm::scale(rotateZ, this->scale);
 
-		glm::vec3 combTranslation = this->position + offset;
-		glm::mat4 model = glm::translate(scale, combTranslation);
+		glm::mat4 offTrans = glm::translate(glm::mat4(1.0f), offset);
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), position);
 
-		this->modelViewMatrix = view * model;
+		this->modelViewMatrix = view * model *offTrans;
 
 	}
 

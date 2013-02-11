@@ -43,8 +43,8 @@ namespace M3D{
 
 		file.seekg(0, std::ios::beg);
 		file.read(data, fileLength);
-		std::cout<<"Finalbits "<<data[fileLength -1]<<std::endl;
-		std::cout<<data<<std::endl;
+		//std::cout<<"Finalbits "<<data[fileLength -1]<<std::endl;
+		//std::cout<<data<<std::endl;
 		file.close();
 		return data;
 	}
