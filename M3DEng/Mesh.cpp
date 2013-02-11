@@ -15,7 +15,7 @@ namespace M3D{
 	
 	}
 
-	void setNormal(std::vector<glm::vec3> &normals, std::vector<GLshort> elements, glm::vec3 normal, int eleIndex,
+	void setNormal(std::vector<glm::vec3> &normals, std::vector<GLushort> elements, glm::vec3 normal, int eleIndex,
 		std::vector<glm::vec4> &verticies){
 		
 		if(normals[elements[eleIndex]] == glm::vec3(0.0f)){
@@ -41,7 +41,10 @@ namespace M3D{
 			glm::vec3 vert3 = glm::vec3(verticies[elements[i + 2]]);
 
 			//calculate normal for this face
-			glm::vec3 normal = glm::normalize(glm::cross(vert3 - vert1, vert2 - vert1));	
+			glm::vec3 normal = glm::normalize(glm::cross(vert3 - vert1, vert2 - vert1));
+			setNormal(normals, elements, normal, i, verticies);
+			setNormal(normals, elements, normal, i + 1, verticies);
+			setNormal(normals, elements, normal, i + 2, verticies);
 			//apply normal for each vert index;
 			
 		}

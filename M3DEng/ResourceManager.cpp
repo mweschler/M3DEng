@@ -36,13 +36,14 @@ namespace M3D{
 
 		//get size of file
 		file.seekg(0, std::ios::end);
-		int fileLength = (int)file.tellg();
+		int fileLength = file.tellg();
 
-		char* data = new char[fileLength];
-		memset(data, 0, sizeof(char) * fileLength);
+		char* data = new char[fileLength + 1];
+		memset(data, 0, sizeof(char) * fileLength + 1);
 
 		file.seekg(0, std::ios::beg);
 		file.read(data, fileLength);
+		std::cout<<"Finalbits "<<data[fileLength -1]<<std::endl;
 		std::cout<<data<<std::endl;
 		file.close();
 		return data;
@@ -129,28 +130,33 @@ namespace M3D{
 	void parseStringPart(std::string data,GLshort &vertexIndex, GLshort &normalIndex){
 		//find vertex index section
 		int position = data.find("/");
-		if(position = std::string::npos){
+		if(position == std::string::npos){
 			std::istringstream vertstream(data);
 			vertstream >> vertexIndex;
 			normalIndex = 0;
 			return;
 		} else {
-			std::istringstream vertstream(data.substr(0,position));
-			vertstream >> vertexIndex;
-
+			std::string sub = data.substr(0, position);
+			std::istringstream vertstream(sub);
+			int vert;
+			vertstream >> vert;
+			vertexIndex = vert;
 			position = data.find("/", position);
 			//ignore texture index
 
 			//rest is normal index;
-			position = data.find("/", position);
+			position = data.find("/", position + 1);
+			sub = data.substr(position + 1);
 			std::istringstream normstream(data.substr(position + 1));
-			normstream >> normalIndex;
+			int norm;
+			normstream >> norm;
+			normalIndex = norm;
 		}
 	}
 
 	Mesh* ResourceManager::loadObjFile(const std::string filename){
 		std::ifstream file;
-		file.open(filename, std::ios::in);
+		file.open(filename, std::ifstream::in);
 
 		if(!file.is_open()){
 			std::cout<<"Could not open OBJ file "<<filename<<std::endl;
@@ -190,8 +196,15 @@ namespace M3D{
 				//found a face
 				
 				GLshort vert1, vert2, vert3, norm1, norm2, norm3;
-				int position = line.find(" ", 3);
-				std::string sub = line.substr(2, position - 1);
+				int start = 2; //line.find(" ", 3);
+				while(start < line.size()){
+					if(line[start] == ' ') {
+						start++;
+					} else
+						break;
+				}
+				int position = line.find(" ", start);
+				std::string sub = line.substr(start, position - start);
 				parseStringPart(sub, vert1, norm1);
 				int nextSpace = line.find(" ", position + 1);
 				
@@ -222,6 +235,22 @@ namespace M3D{
 		file.close();
 		if(!normalsIncluded)
 			mesh->calculateNormals();
+		else{
+			std::vector<glm::vec3> *normals = mesh->getNormals();
+			normals->resize(verticies->size(), glm::vec3(0.0f, 0.0f, 0.0f));
+
+			for(int i = 0; i < elements->size(); ++i){
+				glm::vec3 normal = normalTemp[normalIndexs[i]];
+				glm::vec4 vert = (*verticies)[(*elements)[i]];
+				if((*normals)[(*elements)[i]] == glm::vec3(0.0f)){
+					(*normals)[(*elements)[i]] = normal;
+				}else if((*normals)[(*elements)[i]] != normal){
+					verticies->push_back(vert);
+					normals->push_back(normal);
+					(*elements)[i] = verticies->size() - 1;
+				}
+			}
+		}
 
 		mesh->setupBuffers();
 		return mesh;

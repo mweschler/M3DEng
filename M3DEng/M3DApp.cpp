@@ -110,17 +110,17 @@ namespace M3D{
 
 		GLuint prog = resourceManager.createProgram(shaders);
 
-		sceneManager.setGlobalLightDir(glm::vec3(-1.0f));
+		sceneManager.setGlobalLightDir(glm::vec3(20.0f));
 		sceneManager.setGlobalLightIntensity(glm::vec4(1.0f));
 		sceneManager.setAmbientLightIntensity(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 
 		
-		Mesh* mesh = resourceManager.loadObjFile("decocube_nf4k.obj");
+		Mesh* mesh = resourceManager.loadObjFile("land.obj");
 		if(mesh == NULL){
 			std::cout<<"Mesh was Null, shuting down\n";
 			//shutdown();
 		}
-		mesh->setOriginOffset(glm::vec3(-0.5f, -0.5f, -0.5f));
+		//mesh->setOriginOffset(glm::vec3(-0.5f, -0.5f, -0.5f));
 		/*
 		Mesh* mesh = new Mesh();
 		std::vector<glm::vec4>* verts = mesh->getVerticies();
@@ -182,7 +182,7 @@ namespace M3D{
 			*/
 			
 			glm::vec3 camPos = camera->getPosition();
-			camDeg += .0001;
+			camDeg += .01;
 			if(camDeg >= 360)
 				camDeg = 0;
 			camPos.x = cos(camDeg) * 2;
