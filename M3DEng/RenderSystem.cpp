@@ -24,16 +24,10 @@ namespace M3D{
 		float ratio = 1.0 * screenWidth / screenHeight;
 		perspective = glm::mat4(1.0);;
 		perspective *= glm::perspective(45.0f , ratio, 0.1f, 100.0f);
-		/*glm::mat4 model = glm::mat4(1.0);
-			
-		model *= glm::lookAt( glm::vec3(2.0f,2.0f, -10.0f), 
-		                 glm::vec3(0.0f,0.0f,-1.0f), 
-                         glm::vec3(0.0f,1.0f, 0.0f));*/
+		
 		perspective = perspective;
-		//std::cout<<"MVP: "<<glm::value_ptr(perspective)[0]<<" "<<glm::value_ptr(perspective)[1]<<" "<<glm::value_ptr(perspective)[2];
-		glViewport(0, 0, screenWidth, screenHeight);
 
-		//gluPerspective(45,ratio, 1, 1000);
+		glViewport(0, 0, screenWidth, screenHeight);
 
 		initialized = true;
 		return true;
@@ -56,21 +50,18 @@ namespace M3D{
 
 		//set modelToClip for verticies
 		GLint projLoc = glGetUniformLocation(material->getProgram(), "modelToClip");
-		if(projLoc == -1){
-			//std::cout<<"Invlalid uniform location!"<<std::endl;
-		}
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(modelToClip));
 
 		//set modelToWorld for normals
 		glm::mat3 modelToCamera = glm::mat3(worldToCamera * modelToWorld);
 		
-		//if there is a non uniform scale do an inverse transpose for correct lighting normals
-		glm::vec3 scale = entity->getScale();
-		if(scale.x != scale.y || scale.x != scale.z)
-			modelToCamera = glm::transpose(glm::inverse(modelToCamera));
+		//do an inverse transpose for correct lighting normals
+		glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(modelToCamera)));
+		GLint normMatLoc = glGetUniformLocation(material->getProgram(), "normMatrix");
+		glUniformMatrix3fv(normMatLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
-		//GLint MTCLoc = glGetUniformLocation(material->getProgram(), "modelToCamera");
-		//glUniformMatrix3fv(MTCLoc, 1, GL_FALSE, glm::value_ptr(modelToCamera));
+		GLint MTCLoc = glGetUniformLocation(material->getProgram(), "modelToCamera");
+		glUniformMatrix3fv(MTCLoc, 1, GL_FALSE, glm::value_ptr(modelToCamera));
 
 		//set diffuseColor
 		glm::vec4 diffuseColor = material->getDiffuseColor();
@@ -90,9 +81,8 @@ namespace M3D{
 		glVertexAttribPointer(normLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		//get light dir and prepare it for uniform
-		glm::mat3 worldToModel = glm::mat3(glm::inverse(modelToWorld));
-		glm::vec3 lightDir = worldToModel * globalLightDir;
-		lightDir = glm::normalize(lightDir);
+		glm::vec3 lightDir = globalLightDir;
+		lightDir = glm::normalize(glm::mat3(worldToCamera) * lightDir);
 
 		//set global light direction uniform
 		GLint lightDirLoc = glGetUniformLocation(material->getProgram(), "lightDirection");
@@ -108,10 +98,14 @@ namespace M3D{
 		GLint ambientLoc = glGetUniformLocation(material->getProgram(), "ambientIntensity");
 		glUniform4fv(ambientLoc, 1, glm::value_ptr(ambient));
 
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		float shininess = material->getShininessFactor();
+		GLint shineLoc = glGetUniformLocation(material->getProgram(), "shininessFactor");
+		glUniform1f(shineLoc, shininess);
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getIBO());
+
 		int size;
-		//glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+
 		size = (mesh->getElements())->size();
 		glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, 0);
 

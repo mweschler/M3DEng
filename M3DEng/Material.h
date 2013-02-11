@@ -13,9 +13,12 @@ namespace M3D{
 		GLuint getProgram(void);
 		glm::vec4 getDiffuseColor(void) const;
 		void setDiffuseColor(const glm::vec4 color);
+		float getShininessFactor(void) const;
+		void setShininessFactor(const float value);
 	private:
 		GLuint program;
 		glm::vec4 diffuseColor;
+		float shininessFactor;
 	};
 
 }

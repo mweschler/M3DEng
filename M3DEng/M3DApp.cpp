@@ -107,8 +107,8 @@ namespace M3D{
 		running = true;
 		//do stuff
 
-		GLuint vert = resourceManager.loadShader(GL_VERTEX_SHADER, "light_120.vert");
-		GLuint frag = resourceManager.loadShader(GL_FRAGMENT_SHADER, "light_120.frag");
+		GLuint vert = resourceManager.loadShader(GL_VERTEX_SHADER, "lightSpec_120.vert");
+		GLuint frag = resourceManager.loadShader(GL_FRAGMENT_SHADER, "lightSpec_120.frag");
 		std::vector<GLuint> shaders;
 		shaders.push_back(vert);
 		shaders.push_back(frag);
@@ -131,18 +131,22 @@ namespace M3D{
 		Material landMat;
 		landMat.setProgram(prog);
 		landMat.setDiffuseColor(glm::vec4(0.0f, 0.7f, 0.0f, 1.0f));
+		landMat.setShininessFactor(2.0f);
 
 		Material box1Mat;
 		box1Mat.setProgram(prog);
 		box1Mat.setDiffuseColor(glm::vec4(0.4f, 0.0f, 0.8f, 1.0f));
+		box1Mat.setShininessFactor(2.0f);
 
 		Material box2Mat;
 		box2Mat.setProgram(prog);
 		box2Mat.setDiffuseColor(glm::vec4(0.7f, 0.0f, 0.0f, 1.0f));
+		box2Mat.setShininessFactor(70.0f);
 
 		Material box3Mat;
 		box3Mat.setProgram(prog);
 		box3Mat.setDiffuseColor(glm::vec4(0.8f, 0.8f, 0.0f, 1.0f));
+		box3Mat.setShininessFactor(7.0f);
 
 		Entity land;
 		land.setMaterial(&landMat);
@@ -192,7 +196,6 @@ namespace M3D{
 			
 			
 			while(currentTime >= lastTime && loops < MAX_FRAMESKIP){
-				//std::cout<<"Updating! current:"<<currentTime<<" last: "<<lastTime<<" loops: "<<loops<<std::endl;
 			
 				glm::vec3 pos = box3.getPosition();
 				if(pos.y > 2 || pos.y < 0.75)
@@ -206,7 +209,6 @@ namespace M3D{
 					scaleDir = -scaleDir;
 
 				scale.x += 0.01 * scaleDir;
-				//scale.z += 0.01 * scaleDir;
 				box1.setScale(scale);
 				
 			
@@ -254,8 +256,9 @@ namespace M3D{
 	void M3DApp::render(double time){
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			// Swap front and back rendering buffers
+
 			sceneManager.renderScene();
+
 			glfwSwapBuffers();
 	}
 

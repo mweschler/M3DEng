@@ -22,12 +22,6 @@ namespace M3D{
 			normals[elements[eleIndex]] = normal;
 		} else if(normals[elements[eleIndex]] != normal)
 		{
-			/*
-			glm::vec4 vert = verticies[elements[eleIndex]];
-			verticies.push_back(vert);
-			normals.push_back(normal);
-			elements[eleIndex] = verticies.size() - 1;
-			*/
 			glm::vec3 norm2 = normals[elements[eleIndex]];
 			normal = glm::normalize(normal + norm2);
 			normals[elements[eleIndex]] = normal;
@@ -87,10 +81,6 @@ namespace M3D{
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * elements.size(), &elements[0], GL_STATIC_DRAW);
 	
 
-
-	//glBindBuffer(GL_ARRAY_BUFFER, vbo_verts);
-	//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -115,11 +105,5 @@ namespace M3D{
 	glm::vec3 Mesh::getOriginOffset(void) const{
 		return glm::vec3(this->originOffset);
 	}
-
-	/*
-	const GLuint Mesh::getVAO(void) {
-		return this->vao;
-	}
-	*/
 }
 

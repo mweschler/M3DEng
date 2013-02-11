@@ -106,7 +106,7 @@ namespace M3D{
 		glm::mat4 offTrans = glm::translate(glm::mat4(1.0f), offset);
 		glm::mat4 view = glm::translate(glm::mat4(1.0f), position);
 
-		this->modelViewMatrix = view * model *offTrans;
+		this->modelViewMatrix = view * model * offTrans;
 
 	}
 

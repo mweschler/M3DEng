@@ -108,6 +108,8 @@ xcopy "$(SolutionDir)Meshes\*.*" "$(OutDir)" /Y</Command>
   <ItemGroup>
     <None Include="basic.frag" />
     <None Include="basic.vert" />
+    <None Include="lightSpec_120.frag" />
+    <None Include="lightSpec_120.vert" />
     <None Include="light_120.frag" />
     <None Include="light_120.vert" />
   </ItemGroup>

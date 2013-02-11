@@ -43,8 +43,7 @@ namespace M3D{
 
 		file.seekg(0, std::ios::beg);
 		file.read(data, fileLength);
-		//std::cout<<"Finalbits "<<data[fileLength -1]<<std::endl;
-		//std::cout<<data<<std::endl;
+
 		file.close();
 		return data;
 	}
@@ -190,7 +189,7 @@ namespace M3D{
 				stream >> normal.x;
 				stream >> normal.y;
 				stream >> normal.z;
-
+				normal = glm::normalize(normal); //obj does not gurantee unit length
 				normalTemp.push_back(normal);
 			} else if (line.substr(0,2) == "f "){
 				//found a face
