@@ -13,6 +13,8 @@ namespace M3D{
 		bool initialize(int width, int height);
 		int run();
 	private:
+		void update(double time);
+		void render(double time);
 		void shutdown();
 		bool initialized;
 		bool running;

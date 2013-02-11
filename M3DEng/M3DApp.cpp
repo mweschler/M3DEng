@@ -153,16 +153,27 @@ namespace M3D{
 		camera->setTarget(glm::vec3(0.0f, 0.0f, 0.0f));
 
 		float dir = 1;
-		
+		double lastTime = 0;
 		float camDeg = 0;
 		while(running){
-			glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			// Swap front and back rendering buffers
-			sceneManager.renderScene();
-			glfwSwapBuffers();
+			double currentTime = glfwGetTime();
 			
-			/*
+			
+			
+			
+
+			if(glfwGetKey( GLFW_KEY_ESC) || !glfwGetWindowParam( GLFW_OPENED )){
+				delete mesh;
+				shutdown();
+			}
+		}
+
+		return EXIT_SUCCESS;
+	}
+
+	void M3DApp::update(double time){
+		Camera *camera = sceneManager.getMainCamera();
+		/*
 			glm::vec3 pos = entity.getPosition();
 			if(pos.y > 2 || pos.y < -2)
 				dir = -dir;
@@ -196,15 +207,14 @@ namespace M3D{
 			entityRot.y = camDeg;
 			
 			entity.setRotation(entityRot); */
-			
+	}
 
-			if(glfwGetKey( GLFW_KEY_ESC) || !glfwGetWindowParam( GLFW_OPENED )){
-				delete mesh;
-				shutdown();
-			}
-		}
-
-		return EXIT_SUCCESS;
+	void M3DApp::render(double time){
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			// Swap front and back rendering buffers
+			sceneManager.renderScene();
+			glfwSwapBuffers();
 	}
 
 	void M3DApp::shutdown(){
