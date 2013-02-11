@@ -43,7 +43,7 @@ namespace M3D{
 
 		file.seekg(0, std::ios::beg);
 		file.read(data, fileLength);
-
+		std::cout<<data<<std::endl;
 		file.close();
 		return data;
 	}

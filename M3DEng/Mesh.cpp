@@ -15,13 +15,17 @@ namespace M3D{
 	
 	}
 
-	void setNormal(std::vector<glm::vec3> &normals, std::vector<GLshort> elements, glm::vec3 normal, int eleIndex){
+	void setNormal(std::vector<glm::vec3> &normals, std::vector<GLshort> elements, glm::vec3 normal, int eleIndex,
+		std::vector<glm::vec4> &verticies){
 		
 		if(normals[elements[eleIndex]] == glm::vec3(0.0f)){
 			normals[elements[eleIndex]] = normal;
 		} else if(normals[elements[eleIndex]] != normal)
 		{
-			glm::vec4 vert = v
+			glm::vec4 vert = verticies[elements[eleIndex]];
+			verticies.push_back(vert);
+			normals.push_back(normal);
+			elements[eleIndex] = verticies.size() - 1;
 		}
 	}
 	
