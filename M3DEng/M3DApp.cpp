@@ -115,6 +115,22 @@ namespace M3D{
 
 		GLuint prog = resourceManager.createProgram(shaders);
 
+		GLuint basicVert = resourceManager.loadShader(GL_VERTEX_SHADER, "basic.vert");
+		GLuint basicFrag = resourceManager.loadShader(GL_FRAGMENT_SHADER, "basic.frag");
+		std::vector<GLuint> basicShaders;
+		basicShaders.push_back(basicVert);
+		basicShaders.push_back(basicFrag);
+
+		GLuint basicProg = resourceManager.createProgram(basicShaders);
+
+		GLuint difVert = resourceManager.loadShader(GL_VERTEX_SHADER, "light_120.vert");
+		GLuint difFrag = resourceManager.loadShader(GL_FRAGMENT_SHADER, "light_120.frag");
+		std::vector<GLuint> difShaders;
+		difShaders.push_back(difVert);
+		difShaders.push_back(difFrag);
+
+		GLuint difProg = resourceManager.createProgram(difShaders);
+
 		sceneManager.setGlobalLightDir(glm::vec3(1.0f));
 		sceneManager.setGlobalLightIntensity(glm::vec4(1.0f));
 		sceneManager.setAmbientLightIntensity(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
@@ -242,6 +258,29 @@ namespace M3D{
 				delete landMesh;
 				delete boxMesh;
 				shutdown();
+			}
+
+			if(glfwGetKey( GLFW_KEY_F1))
+			{
+				landMat.setProgram(basicProg);
+				box1Mat.setProgram(basicProg);
+				box2Mat.setProgram(basicProg);
+				box3Mat.setProgram(basicProg);
+			}
+
+			if(glfwGetKey( GLFW_KEY_F2))
+			{
+				landMat.setProgram(difProg);
+				box1Mat.setProgram(difProg);
+				box2Mat.setProgram(difProg);
+				box3Mat.setProgram(difProg);
+			}
+			if(glfwGetKey( GLFW_KEY_F3))
+			{
+				landMat.setProgram(prog);
+				box1Mat.setProgram(prog);
+				box2Mat.setProgram(prog);
+				box3Mat.setProgram(prog);
 			}
 		}
 
