@@ -202,6 +202,10 @@ namespace M3D{
 		double lastTime = glfwGetTime();
 		float camDeg = 0;
 		float boxDeg = 0;
+		float camDistance = 5;
+		bool autoCamera = true;
+		bool spacePressed = false;
+
 
 		std::cout<<"Starting main loop. Updates per second: "<<UPDATES_PER_SECOND<<" Min MS per update "<< MS_PER_UPDATE<<" Framskip "<<MAX_FRAMESKIP<<std::endl;
 		while(running){
@@ -227,14 +231,15 @@ namespace M3D{
 				scale.x += 0.01 * scaleDir;
 				box1.setScale(scale);
 				
-			
-				glm::vec3 camPos = camera->getPosition();
-				camDeg += .001;
-				if(camDeg >= 360)
-					camDeg = 0;
-				camPos.x = cos(camDeg) * 5;
-				camPos.z = sin(camDeg) * 5;
-				camera->setPosition(camPos);
+				if(autoCamera){
+					glm::vec3 camPos = camera->getPosition();
+					camDeg += .001;
+					if(camDeg >= 360)
+						camDeg = 0;
+					camPos.x = cos(camDeg) * camDistance;
+					camPos.z = sin(camDeg) * camDistance;
+					camera->setPosition(camPos);
+				}
 
 				glm::vec3 entityRot = box2.getRotation();
 				boxDeg += 1;
@@ -282,6 +287,56 @@ namespace M3D{
 				box2Mat.setProgram(prog);
 				box3Mat.setProgram(prog);
 			}
+			int spaceStatus = glfwGetKey(GLFW_KEY_SPACE);
+			if(spaceStatus && !spacePressed){
+				spacePressed = true;
+			} else if(!spaceStatus && spacePressed){
+				spacePressed = false;
+				autoCamera = !autoCamera;
+			}
+
+			if(!autoCamera){
+				glm::vec3 camPos = camera->getPosition();
+				glm::vec3 camTarget = camera->getTarget();
+				if(glfwGetKey(GLFW_KEY_LEFT)){
+					camDeg += .01;
+				}
+				if(glfwGetKey(GLFW_KEY_RIGHT)){
+					camDeg -= .01;
+				}
+
+				if(glfwGetKey(GLFW_KEY_UP)){
+					camPos.y += .05;
+					camTarget.y += .05;
+				}
+				if(glfwGetKey(GLFW_KEY_DOWN)){
+					camPos.y -= .05;
+					camTarget.y -= .05;
+				}
+
+				if(glfwGetKey('W')){
+					camDistance += .05;
+				}
+				if(glfwGetKey('S')){
+					camDistance -= .05;
+				}
+				if(glfwGetKey('A')){
+					camTarget.x -= .05;
+				}
+
+				if(glfwGetKey('D')){
+					camTarget.x += .05;
+				}
+
+				if(camDeg >= 360)
+					camDeg = 0;
+				
+				camPos.x = cos(camDeg) * camDistance + camTarget.x;
+				camPos.z = sin(camDeg) * camDistance;
+				camera->setPosition(camPos);
+				camera->setTarget(camTarget);
+			}
+
 		}
 
 		return EXIT_SUCCESS;
