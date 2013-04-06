@@ -15,9 +15,11 @@ TEMPLATE = app
 
 SOURCES += tst_editunittesttest.cpp \
     ../M3DEdit/geometry.cpp \
+    ../M3DEdit/geometrymanager.cpp \
     ../M3DEdit/box.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
     ../M3DEdit/geometry.h \
+    ../M3DEdit/geometrymanager.h \
     ../M3DEdit/box.h
