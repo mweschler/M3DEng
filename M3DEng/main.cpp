@@ -14,7 +14,7 @@ int main(int argc, char *argv[]){
 	return app.run();*/
 
 	HW2::HW2Driver driver;
-	driver.loadMesh("torus.obj");
+	driver.loadMesh("hand.obj");
 	int euler = driver.calcEulerFromMesh();
 	std::cout<<"The euler number found using v+f-e is "<<euler<<std::endl;
 	

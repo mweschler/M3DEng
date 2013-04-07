@@ -1,6 +1,7 @@
 #include <iostream>
 #include <OpenMesh\Core\IO\MeshIO.hh>
 #include <glm\glm.hpp>
+#include <math.h>
 
 #include "hw2.h"
 
@@ -47,15 +48,16 @@ bool loadMesh(std::string filename);
 	double HW2Driver::calcGausCurveFromMesh(){
 		double totalCurve = 0;
 		MyMesh::VertexIter v_it, v_end(myMesh.vertices_end());
-
+		int i = 0;
 		for(v_it = myMesh.vertices_begin(); v_it != v_end; ++v_it){
 			MyMesh::VertexHandle vert = v_it.handle();
-			totalCurve += calcGaussAtVertex(vert);
+			double vertCurve = calcGaussAtVertex(vert);
 			
+			totalCurve += calcGaussAtVertex(vert);
+			++i;
+			if(i % 100 == 0)
+				std::cerr<<"vertCurve: "<<vertCurve<<" totalCurve: "<<totalCurve<<std::endl;
 		}
-
-		MyMesh::VertexHandle vert = v_it.handle();
-		MyMesh::Point point = myMesh.point(vert);
 		
 		return totalCurve;
 	}
@@ -64,25 +66,78 @@ bool loadMesh(std::string filename);
 		return 2 * M_PI * euler;
 	}
 
+	//convertes an openmesh point to a glm vec3
+	glm::vec3 pointToVec3(MyMesh::Point point){
+		const float* data = point.data();
+		return glm::vec3(data[0], data[1], data[2]);
+	}
+
+	double magOfVec(glm::vec3 vector){
+		return sqrt(pow(vector.x, 2) + pow(vector.y, 2) + pow(vector.z, 2));
+	}
+
+	double angleFromVecs(glm::vec3 vecA, glm::vec3 vecB, glm::vec3 vecC){
+		glm::vec3 u = vecA - vecB;
+		glm::vec3 v = vecA - vecC;
+
+		//std::cerr<<"VertB: ("<<vecB.x<<", "<<vecB.y<<", "<<vecB.z<<")"<<std::endl;
+		//std::cerr<<"VertC: ("<<vecC.x<<", "<<vecC.y<<", "<<vecC.z<<")"<<std::endl;
+
+		//std::cerr<<"U(A-B): ("<<u.x<<", "<<u.y<<", "<<u.z<<")"<<std::endl;
+		//std::cerr<<"V(A-C): ("<<v.x<<", "<<v.y<<", "<<v.z<<")"<<std::endl;
+		 
+		double magU = magOfVec(u);
+		double magV = magOfVec(v);
+
+		//std::cerr<<"U*V = "<<glm::dot(u,v)<<std::endl;
+		//std::cerr<<"|U| = "<<magU<<std::endl;
+		//std::cerr<<"|V| = "<<magV<<std::endl;
+		double cosAngle = glm::dot(u,v) / (magU * magV);
+
+		//std::cerr<<"Cos of angle: "<<cosAngle<<std::endl;
+		if(cosAngle< -1)
+			cosAngle = -1;
+
+		if(cosAngle> 1)
+			cosAngle = 1;
+
+		double angle = acos(cosAngle);
+
+		//std::cerr<<"angle is "<<angle<<" deg: "<<(angle *180.0 / M_PI)<<std::endl;
+		return angle;
+	}
+
 	double HW2Driver::calcGaussAtVertex(MyMesh::VertexHandle vertex){
 		double totalAngle = 0;
-		MyMesh::Point vertPoint = myMesh.point(vertex);
-		const float* data = vertPoint.data();
-		glm::vec3 vec1 = glm::vec3(data[0], data[1], data[2]);
+		glm::vec3 vecA = pointToVec3(myMesh.point(vertex));
+
+		//std::cerr<<"Finding curveature at vertex: ("<<vecA.x<<", "<<vecA.y<<", "<<vecA.z<<")"<<std::endl;
 
 		//find the toal angle for all inner angles at this vertex
-		MyMesh::VertexOHalfedgeIter he_it(myMesh.voh_begin(vertex)), he_end(myMesh.voh_end(vertex));
-		MyMesh::Halfedge he = myMesh.halfedge(he_it);
-		vertPoint = //TODO: Vertex to Vec3, find angles
-		glm::vec3 vec2;
+		MyMesh::VertexVertexIter vv_it(myMesh.vv_begin(vertex)), vv_end(myMesh.vv_end(vertex));
+
+		MyMesh::VertexHandle vertHandle = vv_it.handle();
 		
-		for(; he_it != he_end; ++he_it){
-			MyMesh::Halfedge 
+		glm::vec3 vecB = pointToVec3(myMesh.point(vertHandle));
+		glm::vec3 first = vecB;
+
+		for(++vv_it; vv_it != vv_end; ++vv_it){
+			vertHandle = vv_it.handle();
+			 glm::vec3 vecC = pointToVec3(myMesh.point(vertHandle));
+			 double angle = angleFromVecs(vecA, vecB, vecC);
+			 totalAngle += angle;
+
+			 vecB = vecC;
 		}
 
+		//get angle between first and last set of vecs
+		glm::vec3 vecC = first;
+		totalAngle += angleFromVecs(vecA, vecB, vecC);
 
+		//std::cerr<<"Total angle: "<<totalAngle<<" deg: "<<(totalAngle *180.0 / M_PI)<<std::endl;
 		//calculate the curveature at this vertex
 		double curve = (2 * M_PI) - totalAngle;
+		//std::cerr<<"Curve at vertex: "<<curve<<std::endl;
 		return curve;
 	}
 }
