@@ -5,10 +5,18 @@
 
 namespace M3DEditRender
 {
+enum AxisLock{
+    XY,
+    YZ,
+    XZ
+};
+
 class AxisCamera : public Camera
 {
 public:
-    explicit AxisCamera();
+    explicit AxisCamera(AxisLock lock);
+private:
+    AxisLock lockAxis;
 };
 }
 

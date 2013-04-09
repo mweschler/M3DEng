@@ -19,7 +19,7 @@ int GeometryManager::addGeometry(Geometry *newGeo){
 
     this->geometryList[id] = newGeo;
 
-    emit geometryAdded(id);
+    emit geometryAdded(id, newGeo);
 
     return id;
 }
@@ -33,7 +33,7 @@ Geometry *GeometryManager::removeGeometry(int id){
     geometryList.remove(id);
     reclaimedIDs.push(id);
 
-    emit geometryRemoved(id);
+    emit geometryRemoved(id, geo);
 
     return geo;
 }

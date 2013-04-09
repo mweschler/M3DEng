@@ -17,8 +17,8 @@ public:
     Geometry *getGeometry(int id);
     int total() const;
 signals:
-    void geometryAdded(int id);
-    void geometryRemoved(int id);
+    void geometryAdded(int id, Geometry *geo);
+    void geometryRemoved(int id, Geometry *geo);
 public slots:
 
 private:

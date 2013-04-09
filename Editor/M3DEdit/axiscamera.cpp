@@ -1,7 +1,7 @@
 #include "axiscamera.h"
 
 namespace M3DEditRender{
-AxisCamera::AxisCamera()
+AxisCamera::AxisCamera(AxisLock lock): lockAxis(lock)
 {
 }
 }
