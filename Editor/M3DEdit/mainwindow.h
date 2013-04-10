@@ -9,6 +9,7 @@ namespace Ui {
 class MainWindow;
 }
 namespace M3DEditGUI{
+//! the main window of the editor
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
