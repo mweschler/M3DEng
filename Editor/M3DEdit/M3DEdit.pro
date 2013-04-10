@@ -52,3 +52,10 @@ HEADERS  += mainwindow.h \
     material.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    shaders.qrc
+
+OTHER_FILES += \
+    axisvert.vert \
+    axisfrag.frag

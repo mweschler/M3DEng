@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "axisrenderer.h"
+#include "geometrymanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -14,8 +16,15 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    M3DEditLevel::GeometryManager *getGeoMgr();
+    M3DEditRender::AxisRenderer *getAxisRender();
+
+private slots:
+    void on_actionAddGeo_triggered();
 
 private:
+    M3DEditRender::AxisRenderer axisRenderer;
+    M3DEditLevel::GeometryManager geoMgr;
     Ui::MainWindow *ui;
 };
 }

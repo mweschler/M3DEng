@@ -3,6 +3,8 @@
 #include "geometrymanager.h"
 
 namespace M3DEditLevel{
+GeometryManager *g_geoMgr = NULL;
+
 GeometryManager::GeometryManager(QObject *parent) :
     QObject(parent)
 {
@@ -19,6 +21,7 @@ int GeometryManager::addGeometry(Geometry *newGeo){
 
     this->geometryList[id] = newGeo;
 
+    qDebug()<<"GeoMgr: Added Geo"<<id;
     emit geometryAdded(id, newGeo);
 
     return id;
@@ -33,9 +36,23 @@ Geometry *GeometryManager::removeGeometry(int id){
     geometryList.remove(id);
     reclaimedIDs.push(id);
 
+    qDebug()<<"GeoMgr: removed Geo "<<id;
     emit geometryRemoved(id, geo);
 
     return geo;
+}
+
+void GeometryManager::updateGeometry(int id, Geometry *geo)
+{
+    if(!geometryList.contains(id)){
+        qDebug()<<"Unable to update geometry, id "<< id <<" not found";
+        throw std::runtime_error("Cann't update geometry, id not found");
+    }
+
+    geometryList[id] = geo;
+
+    qDebug()<<"GeoMgr: Updated geo "<<id;
+    emit geometryUpdated(id, geo);
 }
 
 Geometry *GeometryManager::getGeometry(int id){

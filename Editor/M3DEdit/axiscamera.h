@@ -8,13 +8,15 @@ namespace M3DEditRender
 enum AxisLock{
     XY,
     YZ,
-    XZ
+    XZ,
+    UNSET
 };
 
 class AxisCamera : public Camera
 {
 public:
     explicit AxisCamera(AxisLock lock);
+    void setLock(AxisLock lock);
 private:
     AxisLock lockAxis;
 };

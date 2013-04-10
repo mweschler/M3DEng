@@ -3,6 +3,7 @@
 
 #include <QGLWidget>
 #include <QGLBuffer>
+#include <QGLShaderProgram>
 #include <QMap>
 
 #include "axisrenderer.h"
@@ -15,13 +16,15 @@ struct vertAttribute{
     float x;
     float y;
     float z;
+    float w;
 };
 
 class AxisViewWidget : public QGLWidget
 {
     Q_OBJECT
 public:
-    explicit AxisViewWidget(M3DEditRender::AxisRenderer *renderer,M3DEditRender::AxisLock lock, QWidget *parent = 0);
+    explicit AxisViewWidget(QWidget *parent = 0);
+    void setAxisLock(M3DEditRender::AxisLock lock);
 protected:
     virtual void paintGL();
     virtual void resizeGL(int width, int height);
@@ -29,12 +32,14 @@ protected:
 public slots:
     void addGeometry(int id, M3DEditLevel::Geometry *geo);
     void removeGeometry(int id, M3DEditLevel::Geometry *geo);
+    void updateGeometry(int id, M3DEditLevel::Geometry *geo);
 private:
     QMap<int, vertAttribute> vertData;
     QMap<int, QGLBuffer> geoVerts;
     QMap<int, QGLBuffer> geoIndex;
     M3DEditRender::AxisRenderer *renderer;
     M3DEditRender::AxisCamera camera;
+    QGLShaderProgram program;
 };
 }
 
