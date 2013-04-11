@@ -133,6 +133,7 @@ void AxisViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
 
     geoIndex[id] = buffer;
     qDebug()<<"AxisView: Added geo!";
+    this->paintGL();
 }
 
 void AxisViewWidget::removeGeometry(int id, M3DEditLevel::Geometry *geo)
@@ -161,6 +162,7 @@ void AxisViewWidget::removeGeometry(int id, M3DEditLevel::Geometry *geo)
     buffer.destroy();
 
     qDebug()<<"[AxisView] removed geo "<<id;
+    this->paintGL();
 }
 
 void AxisViewWidget::updateGeometry(int id, M3DEditLevel::Geometry *geo)
@@ -198,6 +200,7 @@ void AxisViewWidget::updateGeometry(int id, M3DEditLevel::Geometry *geo)
     buffer.write(0,&vertAttribs, sizeof(vertAttribute) * vertAttribs.size());
 
     qDebug()<<"[AxisView] updated geo "<<id;
+    this->paintGL();
 }
 
 }

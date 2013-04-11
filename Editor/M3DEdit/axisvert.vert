@@ -4,6 +4,6 @@ uniform mat4 modelToCamera;
 
 void main(void)
 {
-    gl_Position = modelToCamera * vertex;
+    gl_Position = /*modelToCamera **/ vertex;
     //qt_TexCoord0 = qt_MultiTexCoord0;
 }

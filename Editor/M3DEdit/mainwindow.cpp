@@ -62,15 +62,15 @@ void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
     M3DEditLevel::Geometry *geo = new M3DEditLevel::Box();
     int id = M3DEditLevel::g_geoMgr->addGeometry(geo);
 
-    QVector<QVector3D> bounds;
-    bounds.push_back(QVector3D(2,2,2));
-    bounds.push_back(QVector3D(3,3,3));
-    geo->setBounds(bounds);
+    //QVector<QVector3D> bounds;
+    //bounds.push_back(QVector3D(2,2,2));
+    //bounds.push_back(QVector3D(3,3,3));
+    //geo->setBounds(bounds);
 
-    qDebug()<<"Updating Geo";
-    M3DEditLevel::g_geoMgr->updateGeometry(id, geo);
+    //qDebug()<<"Updating Geo";
+    //M3DEditLevel::g_geoMgr->updateGeometry(id, geo);
 
-    qDebug()<<"Removing Geo";
-    M3DEditLevel::g_geoMgr->removeGeometry(id);
+    //qDebug()<<"Removing Geo";
+    //M3DEditLevel::g_geoMgr->removeGeometry(id);
     delete geo;
 }
