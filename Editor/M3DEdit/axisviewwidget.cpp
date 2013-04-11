@@ -19,12 +19,13 @@ void AxisViewWidget::setAxisLock(M3DEditRender::AxisLock lock)
 }
 
 void AxisViewWidget::paintGL(){
+    glFlush();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    qDebug()<<"[AxisView] paintGL";
     for(QMap<int, QGLBuffer>::Iterator itr = geoVerts.begin(); itr != geoVerts.end(); ++itr){
         QGLBuffer vertBuffer = itr.value();
         QGLBuffer indexBuffer = geoIndex[itr.key()];
-
+        this->makeCurrent();
         renderer->render(camera, program, vertBuffer, indexBuffer);
     }
 
@@ -35,6 +36,7 @@ void AxisViewWidget::paintGL(){
 
 void AxisViewWidget::resizeGL(int width, int height){
     glViewport(0, 0, width, height);
+    this->camera.updateProjection(width, height);
 }
 
 void AxisViewWidget::initializeGL(){
@@ -84,14 +86,14 @@ void AxisViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
         attrib.y = verts[i].y();
         attrib.z = verts[i].z();
         attrib.w = 1.0f;
-
+        qDebug()<<"[AxisView]: bufferVerts ("<<i<<") x "<<attrib.x<<" y: "<<attrib.y<< " z"<<attrib.z;
         vertAttrib.push_back(attrib);
     }
-
     //create a line drawing index
-    std::vector<int> indexList;
+    std::vector<GLuint> indexList;
     for(int i = 0; i < verts.size(); ++ i){
         indexList.push_back(i);
+        qDebug()<<"[AxisView]: bufferIndex "<<i;
     }
     indexList.push_back(0);
 
@@ -122,16 +124,16 @@ void AxisViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
         qFatal("Could not create index buffer");
     }
 
-    if(!buffer.bind()){
+    if(!indexBuffer.bind()){
         qDebug()<<"Could not bind index buffer\n";
         QMessageBox::critical(this, "Fatal Error", "Could not create bind buffer");
         qFatal("Could not bind index buffer");
     }
 
-    buffer.setUsagePattern(QGLBuffer::StaticDraw);
-    buffer.allocate(&indexList, sizeof(int) * (verts.size() + 1) );
+    indexBuffer.setUsagePattern(QGLBuffer::StaticDraw);
+    indexBuffer.allocate(&indexList, sizeof(int) * (verts.size() + 1) );
 
-    geoIndex[id] = buffer;
+    geoIndex[id] = indexBuffer;
     qDebug()<<"AxisView: Added geo!";
     this->paintGL();
 }

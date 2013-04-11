@@ -25,6 +25,7 @@ public:
      * \param lock axis to lock the camera to
      */
     void setLock(AxisLock lock);
+    void updateProjection(int width, int height);
 private:
     //! the axis that this camera is locked to
     AxisLock lockAxis;

@@ -59,7 +59,10 @@ M3DEditRender::AxisRenderer *MainWindow::getAxisRender()
 void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
 {
     qDebug()<<"Adding Geo!";
-    M3DEditLevel::Geometry *geo = new M3DEditLevel::Box();
+    QVector<QVector3D> bounds;
+    bounds.push_back(QVector3D(0.5,0.5,0.5));
+    bounds.push_back(QVector3D(0.75, 0.75, 0.75));
+    M3DEditLevel::Geometry *geo = new M3DEditLevel::Box(bounds);
     int id = M3DEditLevel::g_geoMgr->addGeometry(geo);
 
     //QVector<QVector3D> bounds;

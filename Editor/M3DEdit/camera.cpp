@@ -18,4 +18,9 @@ QVector3D Camera::getPosistion() const{
     return this->position;
 }
 
+QMatrix4x4 Camera::getProjMatrix() const
+{
+    return this->projection;
+}
+
 }

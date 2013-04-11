@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include <QVector3D>
+#include <QMatrix4x4>
 
 namespace M3DEditRender{
 /*!
@@ -11,6 +12,8 @@ class Camera
 {
 public:
     explicit Camera();
+    //! gets this cameras projection matrix;
+    QMatrix4x4 getProjMatrix() const;
 protected:
     /*!
      * \brief sets the position of the camera
@@ -31,6 +34,8 @@ protected:
      * \return position of the camera
      */
     QVector3D getPosistion() const;
+
+    QMatrix4x4 projection;
 private:
     //! current position of the camera
     QVector3D position;
