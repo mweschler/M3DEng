@@ -17,15 +17,30 @@ Box::Box(const QVector<QVector3D> &bounds){
     this->setBounds(bounds);
 }
 
+const static unsigned int linesIndex[] ={
+    0, 1,
+    0, 5,
+    1, 4,
+    4, 5,
+    2, 3,
+    2, 7,
+    6, 3,
+    6, 7,
+    1, 2,
+    4, 3,
+    5, 6,
+    0, 7
+};
+
 QVector<QVector3D> Box::getVerticies() const{
     QVector3D vec1 (upperPoint);
     QVector3D vec2 (upperPoint.x(), upperPoint.y(), lowerPoint.z());
-    QVector3D vec3 (upperPoint.x(), lowerPoint.y(), upperPoint.z());
-    QVector3D vec4 (upperPoint.x(), lowerPoint.y(), lowerPoint.z());
-    QVector3D vec5 (lowerPoint.x(), upperPoint.y(), upperPoint.z());
-    QVector3D vec6 (lowerPoint.x(), upperPoint.y(), lowerPoint.z());
+    QVector3D vec3 (upperPoint.x(), lowerPoint.y(), lowerPoint.z());
+    QVector3D vec4 (lowerPoint);
+    QVector3D vec5 (lowerPoint.x(), upperPoint.y(), lowerPoint.z());
+    QVector3D vec6 (lowerPoint.x(), upperPoint.y(), upperPoint.z());
     QVector3D vec7 (lowerPoint.x(), lowerPoint.y(), upperPoint.z());
-    QVector3D vec8 (lowerPoint);
+    QVector3D vec8 (upperPoint.x(), lowerPoint.y(), upperPoint.z());
 
     QVector<QVector3D> verts;
     verts.append(vec1);
@@ -51,5 +66,17 @@ void Box::setBounds(const QVector<QVector3D> &bounds){
     this->lowerPoint.setX(bounds[1].x());
     this->lowerPoint.setY(bounds[1].y());
     this->lowerPoint.setZ(bounds[1].z());
+}
+
+QVector<unsigned int> Box::getLineIndex() const
+{
+    QVector<unsigned int> indicies;
+    const int edges = 12;
+    for(int i = 0; i < (edges * 2); ++i)
+    {
+        indicies.push_back(linesIndex[i]);
+    }
+
+    return indicies;
 }
 }

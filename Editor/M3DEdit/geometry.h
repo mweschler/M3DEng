@@ -23,6 +23,8 @@ public:
 
     //! pure pirtual method to set the bounds of geometry
     virtual void setBounds(const QVector<QVector3D> &bounds) = 0;
+
+    virtual QVector<unsigned int> getLineIndex() const = 0;
 };
 }
 

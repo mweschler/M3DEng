@@ -33,6 +33,7 @@ public:
      * /param lock axis to lock to
      */
     void setAxisLock(M3DEditRender::AxisLock lock);
+    virtual int heightForWidth(int) const;
 
 protected:
     /*!

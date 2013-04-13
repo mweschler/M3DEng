@@ -10,6 +10,11 @@ AxisViewWidget::AxisViewWidget(QWidget *parent):
     QGLWidget(parent), camera(M3DEditRender::UNSET)
 {
     this->renderer = M3DEditRender::g_axisRenderer;
+
+    QSizePolicy policy;
+    policy.setHeightForWidth(true);
+    this->setSizePolicy(policy);
+
 }
 
 void AxisViewWidget::setAxisLock(M3DEditRender::AxisLock lock)
@@ -18,9 +23,14 @@ void AxisViewWidget::setAxisLock(M3DEditRender::AxisLock lock)
 
 }
 
+int AxisViewWidget::heightForWidth(int w) const
+{
+    return w;
+}
+
 void AxisViewWidget::paintGL(){
-    glFlush();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT );
     qDebug()<<"[AxisView] paintGL";
     for(QMap<int, QGLBuffer>::Iterator itr = geoVerts.begin(); itr != geoVerts.end(); ++itr){
         QGLBuffer vertBuffer = itr.value();
@@ -30,17 +40,19 @@ void AxisViewWidget::paintGL(){
     }
 
     //Needs grid and ui
-
+    renderer->renderOrigin(program, camera);
     this->swapBuffers();
 }
 
 void AxisViewWidget::resizeGL(int width, int height){
     glViewport(0, 0, width, height);
     this->camera.updateProjection(width, height);
+    qDebug()<<"[AxisView] set viewport to "<<width<<" "<<height;
 }
 
 void AxisViewWidget::initializeGL(){
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if(!(QGLShader::hasOpenGLShaders(QGLShader::Vertex) &&
          QGLShader::hasOpenGLShaders(QGLShader::Fragment)))
     {
@@ -89,14 +101,14 @@ void AxisViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
         qDebug()<<"[AxisView]: bufferVerts ("<<i<<") x "<<attrib.x<<" y: "<<attrib.y<< " z"<<attrib.z;
         vertAttrib.push_back(attrib);
     }
-    //create a line drawing index
-    std::vector<GLuint> indexList;
-    for(int i = 0; i < verts.size(); ++ i){
-        indexList.push_back(i);
-        qDebug()<<"[AxisView]: bufferIndex "<<i;
-    }
-    indexList.push_back(0);
 
+    //create a line drawing index
+    QVector<unsigned int> indicies = geo->getLineIndex();
+    qDebug()<<"[AxisView] indicies size: "<<indicies.size();
+    for(int i = 0; i< indicies.size(); i += 2){
+        qDebug()<<"[AxisView]: linesIndex "<< i / 2 <<" ("<<indicies[i]<<
+                   ", "<<indicies[i+1]<<")";
+    }
     this->makeCurrent();
 
     QGLBuffer buffer;
@@ -113,7 +125,7 @@ void AxisViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
     }
 
     buffer.setUsagePattern(QGLBuffer::DynamicDraw);
-    buffer.allocate(&vertAttrib, sizeof(vertAttribute) * verts.size());
+    buffer.allocate(vertAttrib.data(), sizeof(vertAttribute) * verts.size());
 
     geoVerts[id] = buffer;
 
@@ -131,7 +143,7 @@ void AxisViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
     }
 
     indexBuffer.setUsagePattern(QGLBuffer::StaticDraw);
-    indexBuffer.allocate(&indexList, sizeof(int) * (verts.size() + 1) );
+    indexBuffer.allocate(indicies.data(), sizeof(unsigned int) * indicies.size());
 
     geoIndex[id] = indexBuffer;
     qDebug()<<"AxisView: Added geo!";

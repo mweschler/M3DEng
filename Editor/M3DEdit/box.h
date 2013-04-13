@@ -33,6 +33,8 @@ public:
      * \param bounds a vector holding the box
      */
     virtual void setBounds(const QVector<QVector3D> &bounds);
+
+    virtual QVector<unsigned int> getLineIndex() const;
 private:
     //! upper point of the bounds
     QVector3D upperPoint;

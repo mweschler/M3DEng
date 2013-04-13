@@ -3,18 +3,18 @@
 
 #include <QObject>
 #include <QGLBuffer>
+#include <QGLFunctions>
 #include <QGLShaderProgram>
 
 #include "axiscamera.h"
 #include "geometrymanager.h"
 
-namespace M3DEditRender{
+namespace M3DEditRender  {
 //! This class is used to render a scene for an axis view
-class AxisRenderer : public QObject
+class AxisRenderer : protected QGLFunctions
 {
-    Q_OBJECT
 public:
-    explicit AxisRenderer(M3DEditLevel::GeometryManager *geoMgr, QObject *parent = 0);
+    explicit AxisRenderer(M3DEditLevel::GeometryManager *geoMgr);
 
     /*!
      * \brief Renders the object as lines
@@ -24,8 +24,8 @@ public:
      * \param indexBuffer index buffer for the vertex buffer
      */
     void render(AxisCamera &camera, QGLShaderProgram &program, QGLBuffer &vertBuffer, QGLBuffer &indexBuffer);
-public slots:
-    void addGeometry(int id);
+    void renderOrigin(QGLShaderProgram &program, AxisCamera &camera);
+
 private:
     M3DEditLevel::GeometryManager *geoMgr;
 };

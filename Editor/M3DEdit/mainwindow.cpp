@@ -60,8 +60,8 @@ void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
 {
     qDebug()<<"Adding Geo!";
     QVector<QVector3D> bounds;
-    bounds.push_back(QVector3D(0.5,0.5,0.5));
-    bounds.push_back(QVector3D(0.75, 0.75, 0.75));
+    bounds.push_back(QVector3D(0.75,0.75,-0.75));
+    bounds.push_back(QVector3D(0.0, 0.0, 0.0));
     M3DEditLevel::Geometry *geo = new M3DEditLevel::Box(bounds);
     int id = M3DEditLevel::g_geoMgr->addGeometry(geo);
 
