@@ -14,6 +14,11 @@ public:
     explicit Camera();
     //! gets this cameras projection matrix;
     QMatrix4x4 getProjMatrix() const;
+    /*!
+     * \brief gets the current position of the camera
+     * \return position of the camera
+     */
+    QVector3D getPosistion() const;
 protected:
     /*!
      * \brief sets the position of the camera
@@ -29,16 +34,11 @@ protected:
      */
     void setPosition(float x, float y, float z);
 
-    /*!
-     * \brief gets the current position of the camera
-     * \return position of the camera
-     */
-    QVector3D getPosistion() const;
-
     QMatrix4x4 projection;
-private:
     //! current position of the camera
     QVector3D position;
+private:
+
 };
 }
 

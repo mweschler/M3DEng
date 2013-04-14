@@ -25,6 +25,7 @@ public:
      */
     void render(AxisCamera &camera, QGLShaderProgram &program, QGLBuffer &vertBuffer, QGLBuffer &indexBuffer);
     void renderOrigin(QGLShaderProgram &program, AxisCamera &camera);
+    void drawGrid(int gridSize, QGLShaderProgram &program, AxisCamera &camera);
 
 private:
     M3DEditLevel::GeometryManager *geoMgr;

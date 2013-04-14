@@ -146,44 +146,51 @@ void AxisRenderer::render(AxisCamera &camera, QGLShaderProgram &program, QGLBuff
 void AxisRenderer::renderOrigin(QGLShaderProgram &program, AxisCamera &camera)
 {
     qDebug()<<"[AxisRender] drawing origin lines";
+    initializeGLFunctions();
+
     const GLfloat xline[] = {
         0.0f, 0.0f, 0.0f, 1.0f,
-        0.5f, 0.0f, 0.0f, 1.0f
+        5.0f, 0.0f, 0.0f, 1.0f
     };
 
     const GLfloat yline[] = {
         0.0f, 0.0f, 0.0f, 1.0f,
-        0.0f, 0.5f, 0.0f, 1.0f
+        0.0f, 5.0f, 0.0f, 1.0f
     };
 
     const GLfloat zline[] = {
         0.0f, 0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 0.5f, 1.0f
+        0.0f, 0.0f, 5.0f, 1.0f
     };
 
     const GLfloat xcolor[] = { 1.0f, 0.0f, 0.0f, 1.0f};
     const GLfloat ycolor[] = { 0.0f, 1.0f, 0.0f, 1.0f};
-    const GLfloat zcolor[] = { 0.0f, 0.0f, 1.0f, 1.0f};
+    const GLfloat zcolor[] = { 1.0f, 0.0f, 1.0f, 1.0f};
 
     QGLBuffer xbuff(QGLBuffer::VertexBuffer);
     xbuff.create();
     xbuff.bind();
+    xbuff.setUsagePattern(QGLBuffer::StaticDraw);
     xbuff.allocate(xline, sizeof(xline));
 
     QGLBuffer ybuff(QGLBuffer::VertexBuffer);
     ybuff.create();
     ybuff.bind();
+    ybuff.setUsagePattern(QGLBuffer::StaticDraw);
     ybuff.allocate(yline, sizeof(yline));
 
     QGLBuffer zbuff(QGLBuffer::VertexBuffer);
     zbuff.create();
     zbuff.bind();
+    zbuff.setUsagePattern(QGLBuffer::StaticDraw);
     zbuff.allocate(zline, sizeof(zline));
 
     program.bind();
     GLuint colorLoc = program.uniformLocation("color");
+    Q_ASSERT(colorLoc != -1);
     GLuint mvpLoc = program.uniformLocation("modelToCamera");
-    program.setUniformValueArray(mvpLoc, &camera.getProjMatrix(), 1);
+    Q_ASSERT(mvpLoc != -1);
+    program.setUniformValueArray(mvpLoc, &(camera.getProjMatrix()), 1);
 
     xbuff.bind();
     program.enableAttributeArray("vertex");
@@ -213,6 +220,97 @@ void AxisRenderer::renderOrigin(QGLShaderProgram &program, AxisCamera &camera)
     zbuff.bind();
     zbuff.destroy();
 
+}
+
+void AxisRenderer::drawGrid(int gridSize, QGLShaderProgram &program, AxisCamera &camera)
+{
+    int gridNumber = camera.getGridFactor() * 2;
+    qDebug()<<"[AxisRender] Drawing Grid";
+    const int worldSize = 100;
+    float lineLimit = gridNumber * gridSize;
+    qDebug()<<"[AxisRender] lineLimit = "<<lineLimit;
+    float lineX[] = {lineLimit, 0.0f, 0.0f, 1.0f,
+                     -lineLimit, 0.0f, 0.0f, 1.0f};
+
+    float lineY[] = { 0.0f, lineLimit, 0.0f, 1.0f,
+                    0.0f, -lineLimit, 0.0f, 1.0f};
+
+    float lineZ[] = {0.0f, 0.0f, lineLimit, 1.0f,
+                    0.0f, 0.0f, -lineLimit, 1.0f};
+
+    program.bind();
+    QGLBuffer bufferX(QGLBuffer::VertexBuffer);
+    bufferX.setUsagePattern(QGLBuffer::StaticDraw);
+    bufferX.create();
+    bufferX.bind();
+    bufferX.allocate(lineX,sizeof(lineX));
+
+    QGLBuffer bufferY(QGLBuffer::VertexBuffer);
+    bufferY.setUsagePattern(QGLBuffer::StaticDraw);
+    bufferY.create();
+    bufferY.bind();
+    bufferY.allocate(lineY, sizeof(lineY));
+
+    QGLBuffer bufferZ(QGLBuffer::VertexBuffer);
+    bufferZ.setUsagePattern(QGLBuffer::StaticDraw);
+    bufferZ.create();
+    bufferZ.bind();
+    bufferZ.allocate(lineZ, sizeof(lineZ));
+
+    QMatrix4x4 mvp;
+    QMatrix4x4 vp = camera.getProjMatrix();
+    QMatrix4x4 m;
+
+    QVector3D pos = camera.getPosistion();
+    int xoff = pos.x() / gridSize;
+    int yoff = pos.y() / gridSize;
+    int zoff = pos.z() / gridSize;
+
+    QVector4D color(0.3f, 0.3f, 0.3f, 1.0f);
+    program.setUniformValueArray("color", &color, 1);
+    program.enableAttributeArray("vertex");
+    for(int i = -gridNumber; i <= gridNumber; ++i){
+        //x lines
+        if(camera.getLock() == XY || camera.getLock() == XZ)
+        {
+            bufferX.bind();
+            program.setAttributeBuffer("vertex", GL_FLOAT, 0, 4);
+
+            m.setToIdentity();
+            m.translate(0.0f + (xoff * gridSize), (i + yoff) * gridSize, (i + zoff) * gridSize);
+
+            mvp = vp * m ;
+
+            program.setUniformValueArray("modelToCamera", &mvp, 1);
+            glDrawArrays(GL_LINES, 0, 2);
+        }
+
+        //y lines
+        if(camera.getLock() == XY || camera.getLock() == YZ)
+        {
+            bufferY.bind();
+            program.setAttributeBuffer("vertex", GL_FLOAT, 0, 4);
+            m.setToIdentity();
+            m.translate((i + xoff) * gridSize, 0.0f + (yoff * gridSize) ,(i + zoff) * gridSize);
+            mvp = vp * m;
+
+            program.setUniformValueArray("modelToCamera", &mvp, 1);
+            glDrawArrays(GL_LINES, 0, 2);
+        }
+
+        //z lines
+        if(camera.getLock() == XZ || camera.getLock() == YZ)
+        {
+            bufferZ.bind();
+            program.setAttributeBuffer("vertex", GL_FLOAT, 0, 4);
+            m.setToIdentity();
+            m.translate((i + xoff) * gridSize, (i + yoff) * gridSize ,0.0f + (zoff * gridSize));
+            mvp = vp * m;
+
+            program.setUniformValueArray("modelToCamera", &mvp, 1);
+            glDrawArrays(GL_LINES, 0, 2);
+        }
+    }
 }
 
 

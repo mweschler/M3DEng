@@ -25,10 +25,20 @@ public:
      * \param lock axis to lock the camera to
      */
     void setLock(AxisLock lock);
+    AxisLock getLock();
+    void updateProjection();
     void updateProjection(int width, int height);
+    void moveVec(QPoint point);
+    void adjustGrid(int width, int height);
+    int getGridFactor();
+    QVector3D getPos();
 private:
     //! the axis that this camera is locked to
     AxisLock lockAxis;
+    int gridWidth;
+    int gridHeight;
+    int lastWidth;
+    int lastHeight;
 };
 }
 

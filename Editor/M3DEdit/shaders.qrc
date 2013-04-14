@@ -2,5 +2,6 @@
     <qresource prefix="/shaders">
         <file>axisfrag.frag</file>
         <file>axisvert.vert</file>
+        <file>grid.vert</file>
     </qresource>
 </RCC>

@@ -5,6 +5,7 @@
 #include <QGLBuffer>
 #include <QGLShaderProgram>
 #include <QMap>
+#include <QMouseEvent>
 
 #include "axisrenderer.h"
 #include "axiscamera.h"
@@ -53,6 +54,11 @@ protected:
      */
     virtual void initializeGL();
 
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
+
 public slots:
     /*!
      * \brief slot for adding new geometry to the view
@@ -88,6 +94,9 @@ private:
     M3DEditRender::AxisCamera camera;
     //! the program to render the view
     QGLShaderProgram program;
+    QPoint lastMousePosition;
+    bool mouseTrackRight;
+    bool mouseTrackLeft;
 };
 }
 

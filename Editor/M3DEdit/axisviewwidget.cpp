@@ -14,7 +14,8 @@ AxisViewWidget::AxisViewWidget(QWidget *parent):
     QSizePolicy policy;
     policy.setHeightForWidth(true);
     this->setSizePolicy(policy);
-
+    mouseTrackRight = false;
+    mouseTrackLeft = false;
 }
 
 void AxisViewWidget::setAxisLock(M3DEditRender::AxisLock lock)
@@ -32,15 +33,21 @@ void AxisViewWidget::paintGL(){
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT );
     qDebug()<<"[AxisView] paintGL";
+
+    renderer->drawGrid(10, program, camera);
+    renderer->renderOrigin(program, camera);
+
+
+    this->makeCurrent();
     for(QMap<int, QGLBuffer>::Iterator itr = geoVerts.begin(); itr != geoVerts.end(); ++itr){
         QGLBuffer vertBuffer = itr.value();
         QGLBuffer indexBuffer = geoIndex[itr.key()];
-        this->makeCurrent();
+
         renderer->render(camera, program, vertBuffer, indexBuffer);
     }
 
     //Needs grid and ui
-    renderer->renderOrigin(program, camera);
+
     this->swapBuffers();
 }
 
@@ -48,6 +55,7 @@ void AxisViewWidget::resizeGL(int width, int height){
     glViewport(0, 0, width, height);
     this->camera.updateProjection(width, height);
     qDebug()<<"[AxisView] set viewport to "<<width<<" "<<height;
+    this->paintGL();
 }
 
 void AxisViewWidget::initializeGL(){
@@ -83,6 +91,77 @@ void AxisViewWidget::initializeGL(){
         qDebug()<<"Failed to link axis shader program:\n"<<program.log()<<"\n";
         QMessageBox::critical(this, "Error", "Failed to link axis shader program");
         qFatal("Failed to link axis shader program");
+    }
+}
+
+void AxisViewWidget::mousePressEvent(QMouseEvent *event)
+{
+    qDebug()<<"[AxisView] mousePressEvent";
+    Qt::MouseButton button = event->button();
+    Q_ASSERT(!(mouseTrackLeft && mouseTrackRight));
+    //ignore this press if already tracking
+    if(mouseTrackLeft || mouseTrackRight){
+        event->ignore();
+        return;
+    }
+
+    switch(button){
+    case Qt::RightButton:
+        this->mouseTrackRight = true; break;
+    case Qt::LeftButton:
+        this->mouseTrackLeft = true; break;
+    }
+
+    this->lastMousePosition = event->globalPos();
+
+
+    event->accept();
+}
+
+void AxisViewWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    qDebug()<<"[AxisView] mouseReleaseEvent";
+    Q_ASSERT(!(mouseTrackLeft && mouseTrackRight));
+    Qt::MouseButton button = event->button();
+    switch(button){
+    case Qt::RightButton:
+        this->mouseTrackRight = false; break;
+    case Qt::LeftButton:
+        this->mouseTrackLeft = false; break;
+    }
+}
+
+void AxisViewWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    this->makeCurrent();
+    qDebug()<<"[AxisView] mouseMoveEvent";
+    Q_ASSERT(!(mouseTrackLeft && mouseTrackRight));
+
+    if(mouseTrackLeft){
+
+    }
+    if(mouseTrackRight){
+        QPoint pos = event->globalPos();
+        QPoint distance = pos - lastMousePosition;
+        camera.moveVec(distance);
+        lastMousePosition = pos;
+        this->paintGL();
+    }
+}
+
+void AxisViewWidget::wheelEvent(QWheelEvent *event)
+{
+    this->makeCurrent();
+    qDebug()<<"[AxisView] Wheel event delta: "<<event->delta();
+    if (event->delta() > 0){
+        camera.adjustGrid(1, 1);
+        this->paintGL();
+        event->accept();
+    }
+    if (event->delta() < 0){
+        camera.adjustGrid(-1, -1);
+        this->paintGL();
+        event->accept();
     }
 }
 
