@@ -19,15 +19,23 @@ public:
     ~MainWindow();
     M3DEditLevel::GeometryManager *getGeoMgr();
     M3DEditRender::AxisRenderer *getAxisRender();
+    int getSelected();
 
 private slots:
     void on_actionAddGeo_triggered();
+    void selectGeo(int id);
+
+signals:
+    void draw();
 
 private:
     M3DEditRender::AxisRenderer axisRenderer;
     M3DEditLevel::GeometryManager geoMgr;
     Ui::MainWindow *ui;
+    int selected;
 };
+
+extern MainWindow *mainWnd;
 }
 
 #endif // MAINWINDOW_H

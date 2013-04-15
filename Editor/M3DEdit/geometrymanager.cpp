@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <QDebug>
+
 #include "geometrymanager.h"
 
 namespace M3DEditLevel{
@@ -66,5 +67,49 @@ Geometry *GeometryManager::getGeometry(int id){
 
 int GeometryManager::total() const{
     return geometryList.size();
+}
+
+static float snapToGrid(float pos){
+    int gridOff = 1;
+
+    if(pos < 1)
+        gridOff = -1;
+
+    int gridNum = pos /10;
+    qDebug()<<"[GeoMgr] comparing "<<((int)pos % (10))*gridOff<<">=5";
+    if(((int)pos % (10))*gridOff >= 5)
+            gridNum += gridOff;
+
+    return gridNum * 10;
+}
+int GeometryManager::findGeo(QVector3D pos)
+{
+    //find closest grid line coords
+    QVector3D grid(pos);
+
+    qDebug()<<"[GeoMgr] finding for"<<pos.x()<<pos.y()<<pos.z();
+
+    grid.setX(snapToGrid(grid.x()));
+    grid.setY(snapToGrid(grid.y()));
+    grid.setZ(snapToGrid(grid.z()));
+
+    qDebug()<<"[GeoMgr] grid pos"<<grid.x()<<grid.y()<<grid.z();
+
+    QVector<int> matchList;
+    for(int i = 0; i< this->geometryList.size(); ++i){
+        QVector<QVector3D> verts = geometryList[i]->getVerticies();
+        for(int j = 0; j < verts.size(); ++j){
+            qDebug()<<"[GeoMgr] comparing vert"<<verts[j].x()<<verts[j].y()<<verts[j].z();
+            if(verts[j] == grid){
+                matchList.push_back(i);
+            }
+        }
+    }
+
+    if(matchList.size() == 0)
+        return -1;
+
+    return matchList[0];
+
 }
 }

@@ -2,8 +2,11 @@
 #include <QDebug>
 #include <QGLShader>
 #include <vector>
+#include <GL/GLU.h>
+#include <QApplication>
 
 #include "axisviewwidget.h"
+#include "mainwindow.h"
 
 namespace M3DEditGUI{
 AxisViewWidget::AxisViewWidget(QWidget *parent):
@@ -16,6 +19,8 @@ AxisViewWidget::AxisViewWidget(QWidget *parent):
     this->setSizePolicy(policy);
     mouseTrackRight = false;
     mouseTrackLeft = false;
+    mouseMoved = false;
+    initialized = false;
 }
 
 void AxisViewWidget::setAxisLock(M3DEditRender::AxisLock lock)
@@ -30,20 +35,26 @@ int AxisViewWidget::heightForWidth(int w) const
 }
 
 void AxisViewWidget::paintGL(){
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT );
-    qDebug()<<"[AxisView] paintGL";
-
-    renderer->drawGrid(10, program, camera);
-    renderer->renderOrigin(program, camera);
-
-
     this->makeCurrent();
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    qDebug()<<"[AxisView] paintGL";
+    //MainWindow *mainWnd = qobject_cast<MainWindow*>(QApplication::activeWindow());
+    renderer->drawGrid(10, program, camera);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    renderer->renderOrigin(program, camera);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+
     for(QMap<int, QGLBuffer>::Iterator itr = geoVerts.begin(); itr != geoVerts.end(); ++itr){
         QGLBuffer vertBuffer = itr.value();
         QGLBuffer indexBuffer = geoIndex[itr.key()];
 
-        renderer->render(camera, program, vertBuffer, indexBuffer);
+        bool selected = false;
+        if(mainWnd->getSelected() == itr.key())
+            selected = true;
+        this->makeCurrent();
+        renderer->render(camera, program, vertBuffer, indexBuffer, selected);
     }
 
     //Needs grid and ui
@@ -61,6 +72,8 @@ void AxisViewWidget::resizeGL(int width, int height){
 void AxisViewWidget::initializeGL(){
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
     if(!(QGLShader::hasOpenGLShaders(QGLShader::Vertex) &&
          QGLShader::hasOpenGLShaders(QGLShader::Fragment)))
     {
@@ -92,6 +105,7 @@ void AxisViewWidget::initializeGL(){
         QMessageBox::critical(this, "Error", "Failed to link axis shader program");
         qFatal("Failed to link axis shader program");
     }
+    this->initialized = true;
 }
 
 void AxisViewWidget::mousePressEvent(QMouseEvent *event)
@@ -127,7 +141,17 @@ void AxisViewWidget::mouseReleaseEvent(QMouseEvent *event)
     case Qt::RightButton:
         this->mouseTrackRight = false; break;
     case Qt::LeftButton:
-        this->mouseTrackLeft = false; break;
+        if(mouseTrackLeft){
+            this->mouseTrackLeft = false;
+            if(mouseMoved)
+            {
+                mouseMoved = false;
+            }
+            else{
+                selectFromPoint(event->pos());
+            }
+        }
+        break;
     }
 }
 
@@ -138,7 +162,7 @@ void AxisViewWidget::mouseMoveEvent(QMouseEvent *event)
     Q_ASSERT(!(mouseTrackLeft && mouseTrackRight));
 
     if(mouseTrackLeft){
-
+        mouseMoved = true;
     }
     if(mouseTrackRight){
         QPoint pos = event->globalPos();
@@ -164,6 +188,56 @@ void AxisViewWidget::wheelEvent(QWheelEvent *event)
         event->accept();
     }
 }
+
+void AxisViewWidget::selectFromPoint(QPoint point)
+{
+    QVector3D position(point);
+
+    QMatrix4x4 mvp = camera.getProjMatrix();
+    QMatrix4x4 ident;
+    QMatrix4x4 invY;
+    QMatrix4x4 yCoB;
+
+    invY.setToIdentity();
+    invY.setRow(1, QVector4D(0.0f,-1.0f, 0.0f, 0.0f));
+
+    yCoB.setToIdentity();
+    yCoB.translate(0, this->height(), 0);
+
+    position = yCoB * invY * position;
+
+    ident.setToIdentity();
+
+    this->makeCurrent();
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    GLfloat z[5*5];
+    glReadPixels(position.x() - 2, position.y() - 2, 5, 5, GL_DEPTH_COMPONENT, GL_FLOAT, &z);
+
+    float smallest = 1;
+    for(int i = 0; i < 25; ++i)
+        if(z[i]< smallest)
+            smallest = z[i];
+
+    position.setZ(smallest);
+
+    qDebug()<<"[AxisView] new pos: x: "<<position.x()<<" y: "<< position.y()<<
+              " z: "<<position.z();
+
+    GLdouble worldX, worldY, worldZ;
+    gluUnProject(position.x(), position.y(), position.z(), ident.data(),
+                 mvp.data(),viewport, &worldX, &worldY, &worldZ);
+
+    qDebug()<<"[AxisView] translated pos: x:"<<worldX<<
+              " y:"<<worldY<<" z:"<<worldZ;
+
+    int id = M3DEditLevel::g_geoMgr->findGeo(QVector3D(worldX, worldY, worldZ));
+    qDebug()<<"[AxisView] selection gave id "<<id;
+
+    emit selectedGeo(id);
+}
+
 
 void AxisViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
 {

@@ -3,6 +3,8 @@
 #include "box.h"
 
 namespace M3DEditGUI{
+MainWindow *mainWnd = NULL;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     axisRenderer(&geoMgr),
@@ -15,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->axisXY->setAxisLock(M3DEditRender::XY);
     ui->axisXZ->setAxisLock(M3DEditRender::XZ);
     ui->axisYZ->setAxisLock(M3DEditRender::YZ);
+
+    this->selected = -1;
 
     QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryAdded(int,M3DEditLevel::Geometry*)),
                      ui->axisXY, SLOT(addGeometry(int,M3DEditLevel::Geometry*)));
@@ -36,6 +40,16 @@ MainWindow::MainWindow(QWidget *parent) :
                      ui->axisXZ, SLOT(updateGeometry(int,M3DEditLevel::Geometry*)));
     QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryUpdated(int,M3DEditLevel::Geometry*)),
                      ui->axisYZ, SLOT(updateGeometry(int,M3DEditLevel::Geometry*)));
+
+    QObject::connect(ui->axisXY, SIGNAL(selectedGeo(int)), this, SLOT(selectGeo(int)));
+    QObject::connect(ui->axisXZ, SIGNAL(selectedGeo(int)), this, SLOT(selectGeo(int)));
+    QObject::connect(ui->axisYZ, SIGNAL(selectedGeo(int)), this, SLOT(selectGeo(int)));
+
+    QObject::connect(this, SIGNAL(draw()), ui->axisXY, SLOT(updateGL()));
+    QObject::connect(this, SIGNAL(draw()), ui->axisXZ, SLOT(updateGL()));
+    QObject::connect(this, SIGNAL(draw()), ui->axisYZ, SLOT(updateGL()));
+
+    mainWnd = this;
 }
 
 MainWindow::~MainWindow()
@@ -54,13 +68,18 @@ M3DEditRender::AxisRenderer *MainWindow::getAxisRender()
 {
     return &axisRenderer;
 }
+
+int MainWindow::getSelected()
+{
+    return this->selected;
+}
 }
 
 void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
 {
     qDebug()<<"Adding Geo!";
     QVector<QVector3D> bounds;
-    bounds.push_back(QVector3D(25, 25, 25));
+    bounds.push_back(QVector3D(20, 20, 20));
     bounds.push_back(QVector3D(10, 10, 10));
     M3DEditLevel::Geometry *geo = new M3DEditLevel::Box(bounds);
     int id = M3DEditLevel::g_geoMgr->addGeometry(geo);
@@ -81,6 +100,20 @@ void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
 
     //qDebug()<<"Removing Geo";
     //M3DEditLevel::g_geoMgr->removeGeometry(id);
-    delete geo;
-    delete geo2;
+    //delete geo;
+    //delete geo2;
+}
+
+void M3DEditGUI::MainWindow::selectGeo(int id)
+{
+    this->selected = id;
+    if(id >= 0){
+        ui->geoID->setText(QString::number(id));
+    }else{
+        ui->geoID->setText(QString());
+    }
+        qDebug()<<"[MainWnd] selected geo"<<id;
+        ui->axisXY->paintGL();
+        ui->axisXZ->paintGL();
+        ui->axisYZ->paintGL();
 }

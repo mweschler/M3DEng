@@ -32,6 +32,21 @@ const static unsigned int linesIndex[] ={
     0, 7
 };
 
+const static unsigned int triangleIndex[] ={
+    1, 2, 5,
+    1, 5, 6,
+    1, 8, 3,
+    1, 3, 2,
+    6,4, 7,
+    6, 5, 4,
+    6,7,8,
+    6,8,1,
+    2,3,4,
+    2,4,5,
+    3,8,7,
+    3,7,4,
+};
+
 QVector<QVector3D> Box::getVerticies() const{
     QVector3D vec1 (upperPoint);
     QVector3D vec2 (upperPoint.x(), upperPoint.y(), lowerPoint.z());
@@ -78,5 +93,10 @@ QVector<unsigned int> Box::getLineIndex() const
     }
 
     return indicies;
+}
+
+QVector<unsigned int> Box::getTriangleIndex() const
+{
+    return QVector<unsigned int>();
 }
 }

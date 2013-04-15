@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 #include <QStack>
+#include <QVector3D>
 #include "geometry.h"
 
 namespace M3DEditLevel{
@@ -48,6 +49,8 @@ public:
      * \return total pieces of geometry in the level
      */
     int total() const;
+
+    int findGeo(QVector3D pos);
 
 signals:
 

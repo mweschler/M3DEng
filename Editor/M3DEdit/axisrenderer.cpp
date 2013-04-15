@@ -10,7 +10,7 @@ AxisRenderer::AxisRenderer(M3DEditLevel::GeometryManager *geoMgr)
 {
 }
 
-void AxisRenderer::render(AxisCamera &camera, QGLShaderProgram &program, QGLBuffer &vertBuffer, QGLBuffer &indexBuffer)
+void AxisRenderer::render(AxisCamera &camera, QGLShaderProgram &program, QGLBuffer &vertBuffer, QGLBuffer &indexBuffer, bool selected)
 {
     qDebug()<<"[AxisRender] start of render";
     initializeGLFunctions();
@@ -20,102 +20,7 @@ void AxisRenderer::render(AxisCamera &camera, QGLShaderProgram &program, QGLBuff
         qFatal("Could not bind program for use");
     }
 
-    /*
-    const float vertexPositions[] = {
-        0.75f, 0.75f, 0.0f, 1.0f,
-        0.75f, -0.75f, 0.0f, 1.0f,
-        -0.75f, -0.75f, 0.0f, 1.0f,
-    };
-
-
-    GLint vertLoc = program.attributeLocation("vertex");
-    Q_ASSERT(vertLoc != -1);
-    qDebug()<<"[AxisRender] setting attributes";
-    QGLBuffer buffer(QGLBuffer::VertexBuffer);
-    buffer.create();
-    buffer.bind();
-    buffer.allocate(vertexPositions, sizeof(vertexPositions));
-
-    program.enableAttributeArray(vertLoc);
-    program.setAttributeBuffer(vertLoc, GL_FLOAT, 0, 4); */
-
-    /*
-    GLuint positionBufferObject;
-    glGenBuffers(1, &positionBufferObject);
-
-    glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-    glEnableVertexAttribArray(vertLoc);
-    glVertexAttribPointer(vertLoc, 4, GL_FLOAT, GL_FALSE, 0, 0);
-    */
-
     qDebug()<<"[AxisRender] Drawing";
-    /*
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    program.disableAttributeArray(vertLoc);
-    */
-
-    /*
-    const float square[] = {
-        0.25f, 0.25f, 0.0f, 1.0f,
-        0.25f, 0.75f, 0.0f, 1.0f,
-        0.75f, 0.75f, 0.0f, 1.0f,
-        0.75f, 0.25f, 0.0f, 1.0f
-    };
-
-
-    struct va {
-        float x;
-        float y;
-        float z;
-        float w;
-    };
-
-    std::vector<va> square;
-    va vert1, vert2, vert3, vert4;
-    vert1.x = 0.25f;
-    vert1.y = 0.25f;
-    vert1.z = 0.0f;
-    vert1.w = 1.0f;
-
-    vert2.x = 0.25f;
-    vert2.y = 0.75f;
-    vert2.z = 0.0f;
-    vert2.w = 1.0f;
-
-    vert3.x = 0.75f;
-    vert3.y = 0.75f;
-    vert3.z = 0.0f;
-    vert3.w = 1.0f;
-
-    vert4.x = 0.75f;
-    vert4.y = 0.25f;
-    vert4.z = 0.0f;
-    vert4.w = 1.0f;
-
-    square.push_back(vert1);
-    square.push_back(vert2);
-    square.push_back(vert3);
-    square.push_back(vert4);
-
-    const GLuint index[] = {
-        0,1,2,3,0
-    };
-
-    QGLBuffer vb(QGLBuffer::VertexBuffer);
-    QGLBuffer ib(QGLBuffer::IndexBuffer);
-
-    vb.create();
-    vb.bind();
-    vb.allocate(square.data(), sizeof(va) * 4);
-
-    ib.create();
-    ib.bind();
-    ib.allocate(index, sizeof(index));
-    */
 
     program.bind();
     GLint vertLoc = program.attributeLocation("vertex");
@@ -126,6 +31,10 @@ void AxisRenderer::render(AxisCamera &camera, QGLShaderProgram &program, QGLBuff
     Q_ASSERT(mvpLoc != -1);
 
     QVector4D color(0.0f, .5f, 1.0f, 1.0f);
+    if(selected){
+        qDebug()<<"[AxisRender] adding selection color";
+        color = color + QVector4D(1.0f, 0.0f, 0.0f, 0.0f);
+    }
 
     program.setUniformValueArray(colorLoc, &color, 1);
     program.setUniformValueArray(mvpLoc, &camera.getProjMatrix(), 1);

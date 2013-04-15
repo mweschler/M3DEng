@@ -23,7 +23,8 @@ public:
      * \param vertBuffer buffer holding the vertex attributes to render
      * \param indexBuffer index buffer for the vertex buffer
      */
-    void render(AxisCamera &camera, QGLShaderProgram &program, QGLBuffer &vertBuffer, QGLBuffer &indexBuffer);
+    void render(AxisCamera &camera, QGLShaderProgram &program, QGLBuffer &vertBuffer,
+                QGLBuffer &indexBuffer, bool selected = false);
     void renderOrigin(QGLShaderProgram &program, AxisCamera &camera);
     void drawGrid(int gridSize, QGLShaderProgram &program, AxisCamera &camera);
 

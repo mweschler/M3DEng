@@ -25,6 +25,7 @@ public:
     virtual void setBounds(const QVector<QVector3D> &bounds) = 0;
 
     virtual QVector<unsigned int> getLineIndex() const = 0;
+    virtual QVector<unsigned int> getTriangleIndex() const = 0;
 };
 }
 

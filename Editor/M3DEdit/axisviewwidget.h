@@ -24,7 +24,7 @@ struct vertAttribute{
 /*!
  * /brief A display widget that shows a level's geometry.
  */
-class AxisViewWidget : public QGLWidget
+class AxisViewWidget : public QGLWidget, protected QGLFunctions
 {
     Q_OBJECT
 public:
@@ -35,12 +35,13 @@ public:
      */
     void setAxisLock(M3DEditRender::AxisLock lock);
     virtual int heightForWidth(int) const;
-
-protected:
     /*!
      * /brief draws the view via openGL
      */
     virtual void paintGL();
+
+protected:
+
 
     /*!
      * /brief called when the widget is resized
@@ -58,6 +59,8 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
+
+    void selectFromPoint(QPoint point);
 
 public slots:
     /*!
@@ -81,6 +84,11 @@ public slots:
      */
     void updateGeometry(int id, M3DEditLevel::Geometry *geo);
 
+signals:
+
+    void selectedGeo(int id);
+    void unselect(int id);
+
 private:
     //! holds vertex data
     QMap<int, vertAttribute> vertData;
@@ -97,6 +105,8 @@ private:
     QPoint lastMousePosition;
     bool mouseTrackRight;
     bool mouseTrackLeft;
+    bool mouseMoved;
+    bool initialized;
 };
 }
 
