@@ -3,5 +3,7 @@
         <file>axisfrag.frag</file>
         <file>axisvert.vert</file>
         <file>grid.vert</file>
+        <file>perview.frag</file>
+        <file>perview.vert</file>
     </qresource>
 </RCC>

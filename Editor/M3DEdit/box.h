@@ -36,6 +36,7 @@ public:
 
     virtual QVector<unsigned int> getLineIndex() const;
     virtual QVector<unsigned int> getTriangleIndex() const;
+    virtual QVector<QVector3D> getNormals() const;
 private:
     //! upper point of the bounds
     QVector3D upperPoint;

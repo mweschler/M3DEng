@@ -59,4 +59,6 @@ RESOURCES += \
 OTHER_FILES += \
     axisvert.vert \
     axisfrag.frag \
-    grid.vert
+    grid.vert \
+    perview.vert \
+    perview.frag

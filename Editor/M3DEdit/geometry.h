@@ -26,6 +26,7 @@ public:
 
     virtual QVector<unsigned int> getLineIndex() const = 0;
     virtual QVector<unsigned int> getTriangleIndex() const = 0;
+    virtual QVector<QVector3D> getNormals() const = 0;
 };
 }
 

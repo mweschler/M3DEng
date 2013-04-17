@@ -41,6 +41,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryUpdated(int,M3DEditLevel::Geometry*)),
                      ui->axisYZ, SLOT(updateGeometry(int,M3DEditLevel::Geometry*)));
 
+    QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryAdded(int,M3DEditLevel::Geometry*)),
+                     ui->perspective, SLOT(addGeometry(int,M3DEditLevel::Geometry*)));
+
     QObject::connect(ui->axisXY, SIGNAL(selectedGeo(int)), this, SLOT(selectGeo(int)));
     QObject::connect(ui->axisXZ, SIGNAL(selectedGeo(int)), this, SLOT(selectGeo(int)));
     QObject::connect(ui->axisYZ, SIGNAL(selectedGeo(int)), this, SLOT(selectGeo(int)));
@@ -83,6 +86,7 @@ void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
     bounds.push_back(QVector3D(10, 10, 10));
     M3DEditLevel::Geometry *geo = new M3DEditLevel::Box(bounds);
     int id = M3DEditLevel::g_geoMgr->addGeometry(geo);
+
 
     QVector<QVector3D> b2;
     b2.push_back(QVector3D(30,30,-10));

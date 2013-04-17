@@ -33,18 +33,18 @@ const static unsigned int linesIndex[] ={
 };
 
 const static unsigned int triangleIndex[] ={
-    1, 2, 5,
-    1, 5, 6,
-    1, 8, 3,
-    1, 3, 2,
-    6,4, 7,
-    6, 5, 4,
-    6,7,8,
-    6,8,1,
-    2,3,4,
-    2,4,5,
-    3,8,7,
-    3,7,4,
+    0, 1, 4,
+    0, 4, 5,
+    0, 7, 2,
+    0, 2, 1,
+    5, 3, 6,
+    5, 4, 3,
+    5, 6, 7,
+    5, 7, 0,
+    1, 2, 3,
+    1, 3, 4,
+    2, 7, 6,
+    2, 6, 3,
 };
 
 QVector<QVector3D> Box::getVerticies() const{
@@ -97,6 +97,42 @@ QVector<unsigned int> Box::getLineIndex() const
 
 QVector<unsigned int> Box::getTriangleIndex() const
 {
-    return QVector<unsigned int>();
+    QVector<unsigned int> indicies;
+    for(int i = 0; i<36; ++i){
+        indicies.push_back(triangleIndex[i]);
+    }
+
+    return indicies;
+}
+
+QVector<QVector3D> Box::getNormals() const
+{
+    QVector<QVector3D> normals;
+    QVector3D left(-1.0f, 0.0f, 0.0f);
+    QVector3D right(1.0f, 0.0f, 0.0f);
+    QVector3D up(0.0f, 1.0f, 0.0f);
+    QVector3D down(0.0f, -1.0f, 0.0f);
+    QVector3D back(0.0f, 0.0f, -1.0f);
+    QVector3D foward(0.0f, 0.0f, 1.0f);
+
+    normals.push_back(up);
+    normals.push_back(up);
+
+    normals.push_back(left);
+    normals.push_back(left);
+
+    normals.push_back(right);
+    normals.push_back(right);
+
+    normals.push_back(back);
+    normals.push_back(back);
+
+    normals.push_back(foward);
+    normals.push_back(foward);
+
+    normals.push_back(down);
+    normals.push_back(down);
+
+    return normals;
 }
 }
