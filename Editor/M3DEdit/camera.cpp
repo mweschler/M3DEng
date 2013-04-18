@@ -1,7 +1,8 @@
 #include "camera.h"
 
 namespace M3DEditRender{
-Camera::Camera()
+Camera::Camera(QObject *parent):
+    QObject(parent)
 {
 }
 

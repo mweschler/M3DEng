@@ -21,6 +21,12 @@ struct vertAttribute{
     float w;
 };
 
+enum ToolState{
+    SELECT,
+    CAMERA,
+    GEOMETRY
+};
+
 /*!
  * /brief A display widget that shows a level's geometry.
  */
@@ -60,7 +66,8 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
 
-    void selectFromPoint(QPoint point);
+    int selectFromPoint(QPoint point);
+    QVector3D getPosition(QPoint point);
 
 public slots:
     /*!
@@ -83,11 +90,14 @@ public slots:
      * \param geo data for the updated geometry
      */
     void updateGeometry(int id, M3DEditLevel::Geometry *geo);
+    void cameraToggle(bool checked);
+    void geoToolToggle(bool checked);
 
 signals:
 
     void selectedGeo(int id);
     void unselect(int id);
+    void newCamPos(QVector3D, QVector3D);
 
 private:
     //! holds vertex data
@@ -103,10 +113,15 @@ private:
     //! the program to render the view
     QGLShaderProgram program;
     QPoint lastMousePosition;
+    QPoint lastLocalMouse;
     bool mouseTrackRight;
     bool mouseTrackLeft;
     bool mouseMoved;
     bool initialized;
+    bool camLine;
+    ToolState toolState;
+    QVector3D camFrom;
+    QVector3D camTo;
 };
 }
 

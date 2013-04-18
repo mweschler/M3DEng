@@ -21,6 +21,8 @@ AxisViewWidget::AxisViewWidget(QWidget *parent):
     mouseTrackLeft = false;
     mouseMoved = false;
     initialized = false;
+    toolState = SELECT;
+    camLine = false;
 }
 
 void AxisViewWidget::setAxisLock(M3DEditRender::AxisLock lock)
@@ -58,6 +60,9 @@ void AxisViewWidget::paintGL(){
     }
 
     //Needs grid and ui
+
+    if(camLine)
+        renderer->drawCamLine(camFrom, camTo, program, camera);
 
     this->swapBuffers();
 }
@@ -123,9 +128,12 @@ void AxisViewWidget::mousePressEvent(QMouseEvent *event)
     case Qt::RightButton:
         this->mouseTrackRight = true; break;
     case Qt::LeftButton:
-        this->mouseTrackLeft = true; break;
+        this->mouseTrackLeft = true;
+        this->mouseMoved = false;
+        break;
     }
 
+    this->lastLocalMouse = event->pos();
     this->lastMousePosition = event->globalPos();
 
 
@@ -141,17 +149,36 @@ void AxisViewWidget::mouseReleaseEvent(QMouseEvent *event)
     case Qt::RightButton:
         this->mouseTrackRight = false; break;
     case Qt::LeftButton:
-        if(mouseTrackLeft){
-            this->mouseTrackLeft = false;
-            if(mouseMoved)
-            {
-                mouseMoved = false;
+        switch(this->toolState)
+        {
+        case SELECT:
+            if(mouseTrackLeft){
+                this->mouseTrackLeft = false;
+                if(mouseMoved)
+                {
+                    mouseMoved = false;
+                }
+                else{
+                    emit selectedGeo(selectFromPoint(event->pos()));
+                }
             }
-            else{
-                selectFromPoint(event->pos());
+            break;
+        case CAMERA:
+            if(mouseTrackLeft){
+                this->mouseTrackLeft = false;
+                QVector3D camPos = this->getPosition( this->lastLocalMouse);
+                QVector3D targPos = this->getPosition(event->pos());
+                camLine = false;
+                this->paintGL();
+                emit newCamPos(camPos, targPos);
             }
+            break;
+        case GEOMETRY:
+            if(mouseTrackLeft){
+                this->mouseTrackLeft = false;
+            }
+            break;
         }
-        break;
     }
 }
 
@@ -162,8 +189,24 @@ void AxisViewWidget::mouseMoveEvent(QMouseEvent *event)
     Q_ASSERT(!(mouseTrackLeft && mouseTrackRight));
 
     if(mouseTrackLeft){
-        mouseMoved = true;
+        switch(this->toolState){
+        case SELECT:
+            if(mouseTrackLeft){
+                mouseMoved = true;
+            }
+
+            break;
+        case CAMERA:
+            camFrom = getPosition(lastLocalMouse);
+            camTo = getPosition(event->pos());
+            camLine = true;
+            this->paintGL();
+            break;
+        case GEOMETRY:
+            break;
+        }
     }
+
     if(mouseTrackRight){
         QPoint pos = event->globalPos();
         QPoint distance = pos - lastMousePosition;
@@ -189,7 +232,7 @@ void AxisViewWidget::wheelEvent(QWheelEvent *event)
     }
 }
 
-void AxisViewWidget::selectFromPoint(QPoint point)
+int AxisViewWidget::selectFromPoint(QPoint point)
 {
     QVector3D position(point);
 
@@ -235,7 +278,39 @@ void AxisViewWidget::selectFromPoint(QPoint point)
     int id = M3DEditLevel::g_geoMgr->findGeo(QVector3D(worldX, worldY, worldZ));
     qDebug()<<"[AxisView] selection gave id "<<id;
 
-    emit selectedGeo(id);
+    return id;
+}
+
+QVector3D AxisViewWidget::getPosition(QPoint point)
+{
+    QVector3D position(point);
+    position.setZ(0.5f);
+
+    QMatrix4x4 mvp = camera.getProjMatrix();
+    QMatrix4x4 ident;
+    QMatrix4x4 invY;
+    QMatrix4x4 yCoB;
+
+    invY.setToIdentity();
+    invY.setRow(1, QVector4D(0.0f,-1.0f, 0.0f, 0.0f));
+
+    yCoB.setToIdentity();
+    yCoB.translate(0, this->height(), 0);
+
+    position = yCoB * invY * position;
+
+    ident.setToIdentity();
+
+    this->makeCurrent();
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    GLdouble worldX, worldY, worldZ;
+    gluUnProject(position.x(), position.y(), position.z(), ident.data(),
+                 mvp.data(),viewport, &worldX, &worldY, &worldZ);
+
+
+    return QVector3D(worldX, worldY, worldZ);
 }
 
 
@@ -368,6 +443,28 @@ void AxisViewWidget::updateGeometry(int id, M3DEditLevel::Geometry *geo)
 
     qDebug()<<"[AxisView] updated geo "<<id;
     this->paintGL();
+}
+
+void AxisViewWidget::cameraToggle(bool checked)
+{
+    if(checked)
+        this->toolState = CAMERA;
+    else
+        this->toolState = SELECT;
+
+    this->mouseTrackLeft = false;
+    this->mouseTrackRight = false;
+}
+
+void AxisViewWidget::geoToolToggle(bool checked)
+{
+    if(checked)
+        this->toolState = GEOMETRY;
+    else
+        this->toolState = SELECT;
+
+    this->mouseTrackLeft = false;
+    this->mouseTrackRight = false;
 }
 
 }

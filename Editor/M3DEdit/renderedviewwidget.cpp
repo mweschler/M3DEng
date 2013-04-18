@@ -9,6 +9,9 @@ RenderedViewWidget::RenderedViewWidget(QWidget *parent) :
     this->renderer = M3DEditRender::g_perspectiveRender;
     leftTrack = false;
     rightTrack = false;
+
+    QObject::connect(&mousepush, SIGNAL(timeout()), &camera, SLOT(moveFoward()));
+    QObject::connect(&mousepush, SIGNAL(timeout()), this, SLOT(updateGL()));
 }
 
 void RenderedViewWidget::paintGL()
@@ -50,7 +53,8 @@ void RenderedViewWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_CCW);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
 
     QGLShader vertexShader(QGLShader::Vertex);
     QGLShader fragShader(QGLShader::Fragment);
@@ -80,15 +84,15 @@ void RenderedViewWidget::initializeGL()
 void RenderedViewWidget::mousePressEvent(QMouseEvent *event)
 {
     qDebug()<<"[RenderView] Mouse Press";
-    if(!(leftTrack || rightTrack)){
-        switch(event->button()){
-        case (Qt::LeftButton):
-            leftTrack = true;
-            break;
-        case (Qt::RightButton):
-            rightTrack = true;
-            break;
-        }
+    if(event->button() == Qt::LeftButton)
+    {
+        leftTrack = true;
+        mousepush.setInterval(10);
+        mousepush.start();
+    }
+    if(event->button() == Qt::RightButton)
+    {
+        rightTrack = true;
         lastMouse = event->globalPos();
     }
 }
@@ -96,14 +100,15 @@ void RenderedViewWidget::mousePressEvent(QMouseEvent *event)
 void RenderedViewWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     qDebug()<<"[RenderView] mouseRelease";
-    switch(event->button()){
-    case (Qt::LeftButton):
+    if(event->button() == Qt::LeftButton)
+    {
         leftTrack = false;
-        break;
-    case (Qt::RightButton):
-        rightTrack = false;
-        break;
+        mousepush.stop();
     }
+    if(event->button() == Qt::RightButton)
+        rightTrack = false;
+
+
 }
 
 void RenderedViewWidget::mouseMoveEvent(QMouseEvent *event)
@@ -176,5 +181,18 @@ void RenderedViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
 
 void RenderedViewWidget::updateGeometry(int id, M3DEditLevel::Geometry *geo)
 {
+}
+
+void RenderedViewWidget::updateGL()
+{
+    this->paintGL();
+}
+
+void RenderedViewWidget::newCamPos(QVector3D pos, QVector3D target)
+{
+    this->camera.setPosition(pos);
+    this->camera.setTarget(target);
+    this->camera.updateProjection();
+    this->paintGL();
 }
 }

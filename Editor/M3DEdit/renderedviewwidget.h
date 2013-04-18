@@ -6,6 +6,7 @@
 #include <QGLShaderProgram>
 #include <QMouseEvent>
 #include <QPoint>
+#include <QTimer>
 
 #include "geometry.h"
 #include "perspectiverenderer.h"
@@ -30,6 +31,8 @@ signals:
 public slots:
     void addGeometry(int id, M3DEditLevel::Geometry *geo);
     void updateGeometry(int id, M3DEditLevel::Geometry *geo);
+    virtual void updateGL();
+    void newCamPos(QVector3D pos, QVector3D target);
 private:
     QMap<int, QGLBuffer> geoVerts;
     QMap<int, QGLBuffer> geoNorms;
@@ -41,6 +44,7 @@ private:
     bool rightTrack;
     bool leftTrack;
     QPoint lastMouse;
+    QTimer mousepush;
 };
 }
 

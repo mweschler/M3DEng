@@ -1,7 +1,8 @@
 #include "persepectivecamera.h"
 
 namespace M3DEditRender{
-PerspectiveCamera::PerspectiveCamera()
+PerspectiveCamera::PerspectiveCamera(QObject *parent):
+    Camera(parent)
 {
     this->lastHeight = 1;
     this->lastWidth = 1;
@@ -21,7 +22,7 @@ void PerspectiveCamera::updateProjection(int width, int height)
     float aspect = (float)width / height;
 
     proj.setToIdentity();
-    proj.perspective(45, aspect, 0, 1000);
+    proj.perspective(45, aspect, 0.1f, 10000.0f);
 
     this->projection = proj * view;
 
@@ -37,18 +38,36 @@ void PerspectiveCamera::movePos(QPoint point)
 void PerspectiveCamera::moveTarget(QPoint point)
 {
     QMatrix4x4 rotate;
+    QVector3D distance = this->target - this->position;
+    qDebug()<<"[PerspecCamera] Position"<<position.x()<<position.y()<<position.z();
+    qDebug()<<"[PerspecCamera] Target"<<target.x()<<target.y()<<target.z();
+    qDebug()<<"[PerspecCamear]: Distance ="<<distance.x()<<distance.y()<<distance.z();
 
     rotate.setToIdentity();
-
     rotate.rotate(point.x(), 0.0f, 1.0f, 0.0f);
     rotate.rotate(point.y(), 1.0f, 0.0f, 0.0f);
-    rotate.translate(-this->position);
+
+    distance = rotate * distance;
+
+    qDebug()<<"[PerspecCamera] rotated distance"<<distance.x()<<distance.y()<<distance.z();
     qDebug()<<"[PerspecCamera] target pre"<<target.x()<<target.y()<<target.z();
-    this->target = rotate * target;
+    this->target = position + distance;
     qDebug()<<"[PerspCamera] Distance"<<point.x()<<point.y()<<
               "Target"<<target.x()<<target.y()<<target.z();
     this->updateProjection();
 
+}
+
+void PerspectiveCamera::moveFoward()
+{
+    QVector3D direction = this->target - this->position;
+    direction.normalize();
+    direction = direction * 1;
+
+    this->target = target + direction;
+    this->position = position + direction;
+
+    this->updateProjection();
 }
 
 QVector3D PerspectiveCamera::getTarget()

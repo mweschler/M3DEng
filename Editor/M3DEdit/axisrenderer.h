@@ -27,6 +27,7 @@ public:
                 QGLBuffer &indexBuffer, bool selected = false);
     void renderOrigin(QGLShaderProgram &program, AxisCamera &camera);
     void drawGrid(int gridSize, QGLShaderProgram &program, AxisCamera &camera);
+    void drawCamLine(QVector3D from, QVector3D to, QGLShaderProgram &program, AxisCamera &camera);
 
 private:
     M3DEditLevel::GeometryManager *geoMgr;

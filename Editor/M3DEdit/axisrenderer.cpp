@@ -222,6 +222,41 @@ void AxisRenderer::drawGrid(int gridSize, QGLShaderProgram &program, AxisCamera 
     }
 }
 
+void AxisRenderer::drawCamLine(QVector3D from, QVector3D to, QGLShaderProgram &program, AxisCamera &camera)
+{
+    const GLfloat color[] ={1.0f, 0.0f, 0.0f, 1.0f};
+
+    std::vector<GLfloat> bufferData;
+    bufferData.push_back(from.x());
+    bufferData.push_back(from.y());
+    bufferData.push_back(from.z());
+    bufferData.push_back(1.0f);
+
+    bufferData.push_back(to.x());
+    bufferData.push_back(to.y());
+    bufferData.push_back(to.z());
+    bufferData.push_back(1.0f);
+
+    program.bind();
+    QGLBuffer line(QGLBuffer::VertexBuffer);
+    line.create();
+    line.bind();
+    line.allocate(bufferData.data(), sizeof(GLfloat) * 8);
+
+    GLuint colorLoc = program.uniformLocation("color");
+    Q_ASSERT(colorLoc != -1);
+    GLuint mvpLoc = program.uniformLocation("modelToCamera");
+    Q_ASSERT(mvpLoc != -1);
+    program.setUniformValueArray(mvpLoc, &(camera.getProjMatrix()), 1);
+
+    line.bind();
+    program.enableAttributeArray("vertex");
+    program.setAttributeBuffer("vertex", GL_FLOAT, 0, 4);
+    program.setUniformValueArray(colorLoc, color, 1, 4);
+
+    glDrawArrays(GL_LINES, 0, 2);
+}
+
 
 
 

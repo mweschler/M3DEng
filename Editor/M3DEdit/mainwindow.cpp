@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     axisRenderer(&geoMgr),
     ui(new Ui::MainWindow)
 {
+    cameraButton = false;
+    brushButton = false;
     M3DEditLevel::g_geoMgr = new M3DEditLevel::GeometryManager();
     M3DEditRender::g_axisRenderer = new M3DEditRender::AxisRenderer(M3DEditLevel::g_geoMgr);
     ui->setupUi(this);
@@ -120,4 +122,20 @@ void M3DEditGUI::MainWindow::selectGeo(int id)
         ui->axisXY->paintGL();
         ui->axisXZ->paintGL();
         ui->axisYZ->paintGL();
+}
+
+
+
+void M3DEditGUI::MainWindow::on_actionCamera_toggled(bool arg1)
+{
+    cameraButton = arg1;
+    if(cameraButton && brushButton)
+        ui->actionBrush->toggle();
+}
+
+void M3DEditGUI::MainWindow::on_actionBrush_toggled(bool arg1)
+{
+    brushButton = arg1;
+    if(cameraButton && brushButton)
+        ui->actionCamera->toggle();
 }

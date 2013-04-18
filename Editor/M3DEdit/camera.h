@@ -3,15 +3,17 @@
 
 #include <QVector3D>
 #include <QMatrix4x4>
+#include <QObject>
 
 namespace M3DEditRender{
 /*!
  * \brief represents a camera to be used for rendering
  */
-class Camera
+class Camera : public QObject
 {
+    Q_OBJECT
 public:
-    explicit Camera();
+    explicit Camera(QObject *parent = 0);
     //! gets this cameras projection matrix;
     QMatrix4x4 getProjMatrix() const;
     /*!
@@ -19,12 +21,13 @@ public:
      * \return position of the camera
      */
     QVector3D getPosistion() const;
-protected:
     /*!
      * \brief sets the position of the camera
      * \param newPos the new position of the camera
      */
     void setPosition(const QVector3D &newPos);
+protected:
+
 
     /*!
      * \brief sets the position of the camera

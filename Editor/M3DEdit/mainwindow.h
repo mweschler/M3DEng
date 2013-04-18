@@ -25,6 +25,11 @@ private slots:
     void on_actionAddGeo_triggered();
     void selectGeo(int id);
 
+
+    void on_actionCamera_toggled(bool arg1);
+
+    void on_actionBrush_toggled(bool arg1);
+
 signals:
     void draw();
 
@@ -33,6 +38,8 @@ private:
     M3DEditLevel::GeometryManager geoMgr;
     Ui::MainWindow *ui;
     int selected;
+    bool cameraButton;
+    bool brushButton;
 };
 
 extern MainWindow *mainWnd;
