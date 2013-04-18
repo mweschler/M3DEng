@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QKeyEvent>
 #include "axisrenderer.h"
 #include "geometrymanager.h"
 
@@ -19,7 +20,11 @@ public:
     ~MainWindow();
     M3DEditLevel::GeometryManager *getGeoMgr();
     M3DEditRender::AxisRenderer *getAxisRender();
+
     int getSelected();
+
+protected:
+    virtual void keyReleaseEvent(QKeyEvent *event);
 
 private slots:
     void on_actionAddGeo_triggered();
@@ -30,10 +35,19 @@ private slots:
 
     void on_actionBrush_toggled(bool arg1);
 
+    void on_rSpin_valueChanged(double arg1);
+
+    void on_gSpin_valueChanged(double arg1);
+
+    void on_bSpin_valueChanged(double arg1);
+
+    void on_aSpin_valueChanged(double arg1);
+
 signals:
     void draw();
 
 private:
+    QVector4D getRBGA();
     M3DEditRender::AxisRenderer axisRenderer;
     M3DEditLevel::GeometryManager geoMgr;
     Ui::MainWindow *ui;

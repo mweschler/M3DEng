@@ -257,6 +257,43 @@ void AxisRenderer::drawCamLine(QVector3D from, QVector3D to, QGLShaderProgram &p
     glDrawArrays(GL_LINES, 0, 2);
 }
 
+void AxisRenderer::drawBrush(M3DEditLevel::Box &brush, QGLShaderProgram &program, AxisCamera &camera)
+{
+    QVector<QVector3D> temp = brush.getVerticies();
+    QVector<GLfloat> verts;
+    for(int i = 0; i < temp.size(); ++i){
+        QVector3D vert = temp[i];
+        verts.push_back(vert.x());
+        verts.push_back(vert.y());
+        verts.push_back(vert.z());
+        verts.push_back(1.0f);
+    }
+
+    QVector<unsigned int> indicies = brush.getLineIndex();
+
+    QGLBuffer brushBuffer(QGLBuffer::VertexBuffer);
+    brushBuffer.create();
+    brushBuffer.bind();
+    brushBuffer.allocate(verts.data(), sizeof(GLfloat) * verts.size());
+
+    QGLBuffer brushIndex(QGLBuffer::IndexBuffer);
+    brushIndex.create();
+    brushIndex.bind();
+    brushIndex.allocate(indicies.data(), sizeof(unsigned int) * indicies.size());
+
+    program.bind();
+    program.setUniformValueArray("color", &QVector4D(1.0f, 1.0f, 1.0f, 1.0f), 1);
+    program.setUniformValueArray("modelToCamera", &camera.getProjMatrix(), 1);
+
+    brushBuffer.bind();
+    program.enableAttributeArray("vertex");
+    program.setAttributeBuffer("vertex", GL_FLOAT, 0, 4);
+
+    glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);
+
+
+}
+
 
 
 

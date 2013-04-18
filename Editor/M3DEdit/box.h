@@ -3,6 +3,7 @@
 
 #include "geometry.h"
 #include <QVector3D>
+#include <QVector4D>
 template <typename T> class QVector;
 
 
@@ -37,12 +38,17 @@ public:
     virtual QVector<unsigned int> getLineIndex() const;
     virtual QVector<unsigned int> getTriangleIndex() const;
     virtual QVector<QVector3D> getNormals() const;
+    virtual void rebound(QVector3D start);
+    virtual void resize(QVector3D from, QVector3D to);
+
 private:
     //! upper point of the bounds
     QVector3D upperPoint;
 
     //! lower point of the bounds
-    QVector3D lowerPoint;
+    QVector4D lowerPoint;
+
+    QVector4D color;
 };
 }
 

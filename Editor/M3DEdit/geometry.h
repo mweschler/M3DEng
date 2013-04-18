@@ -3,6 +3,7 @@
 
 template <typename T> class QVector;
 class QVector3D;
+class QVector4D;
 
 namespace M3DEditLevel{
 
@@ -24,9 +25,13 @@ public:
     //! pure pirtual method to set the bounds of geometry
     virtual void setBounds(const QVector<QVector3D> &bounds) = 0;
 
+    virtual void rebound(QVector3D start) = 0;
+    virtual void resize(QVector3D from, QVector3D to) = 0;
+
     virtual QVector<unsigned int> getLineIndex() const = 0;
     virtual QVector<unsigned int> getTriangleIndex() const = 0;
     virtual QVector<QVector3D> getNormals() const = 0;
+
 };
 }
 

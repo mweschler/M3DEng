@@ -35,16 +35,21 @@ const static unsigned int linesIndex[] ={
 const static unsigned int triangleIndex[] ={
     0, 1, 4,
     0, 4, 5,
-    0, 7, 2,
-    0, 2, 1,
-    5, 3, 6,
-    5, 4, 3,
-    5, 6, 7,
-    5, 7, 0,
-    1, 2, 3,
-    1, 3, 4,
-    2, 7, 6,
-    2, 6, 3,
+
+    8, 7, 2,
+    8, 2, 9,
+
+    11, 3, 6,
+    11, 10, 3,
+
+    21, 22, 23,
+    21, 23, 20,
+
+    16, 17, 18,
+    16, 18, 19,
+
+    12, 14, 15,
+    12, 15, 13,
 };
 
 QVector<QVector3D> Box::getVerticies() const{
@@ -63,6 +68,22 @@ QVector<QVector3D> Box::getVerticies() const{
     verts.append(vec3);
     verts.append(vec4);
     verts.append(vec5);
+    verts.append(vec6);
+    verts.append(vec7);
+    verts.append(vec8);
+    verts.append(vec1);
+    verts.append(vec2);
+    verts.append(vec5);
+    verts.append(vec6);
+    verts.append(vec3);
+    verts.append(vec4);
+    verts.append(vec8);
+    verts.append(vec7);
+    verts.append(vec2);
+    verts.append(vec3);
+    verts.append(vec4);
+    verts.append(vec5);
+    verts.append(vec1);
     verts.append(vec6);
     verts.append(vec7);
     verts.append(vec8);
@@ -117,22 +138,78 @@ QVector<QVector3D> Box::getNormals() const
 
     normals.push_back(up);
     normals.push_back(up);
-
+    normals.push_back(left);
+    normals.push_back(right);
+    normals.push_back(up);
+    normals.push_back(up);
+    normals.push_back(right);
     normals.push_back(left);
     normals.push_back(left);
-
+    normals.push_back(left);
     normals.push_back(right);
     normals.push_back(right);
-
-    normals.push_back(back);
-    normals.push_back(back);
-
-    normals.push_back(foward);
-    normals.push_back(foward);
-
     normals.push_back(down);
     normals.push_back(down);
+    normals.push_back(down);
+    normals.push_back(down);
+    normals.push_back(foward);
+    normals.push_back(foward);
+    normals.push_back(foward);
+    normals.push_back(foward);
+    normals.push_back(back);
+    normals.push_back(back);
+    normals.push_back(back);
+    normals.push_back(back);
 
     return normals;
 }
+
+void Box::rebound(QVector3D start)
+{
+    int match = -1;
+    QVector<QVector3D> verts = this->getVerticies();
+    for(int i = 0; i < 8; ++i)
+    {
+        QVector3D vert = verts[i];
+        if(vert == start)
+            match = i;
+    }
+
+    switch(match){
+    case 1: this->upperPoint = verts[1];
+        this->lowerPoint = verts[6];
+        break;
+    case 2: this->upperPoint = verts[2];
+        this->lowerPoint = verts[5];
+        break;
+    case 3: this->upperPoint = verts[3];
+        this->lowerPoint = verts[0];
+        break;
+    case 4:
+        this->upperPoint = verts[4];
+        this->lowerPoint = verts[7];
+        break;
+    case 5:
+        this->upperPoint = verts[5];
+        this->lowerPoint = verts[2];
+        break;
+    case 6:
+        this->upperPoint = verts[6];
+        this->lowerPoint = verts[1];
+        break;
+    case 7:
+        this->upperPoint = verts[7];
+        this->lowerPoint = verts[4];
+        break;
+    case 0: break;//no change
+    };
+}
+
+void Box::resize(QVector3D from, QVector3D to)
+{
+    this->rebound(from);
+    this->upperPoint = to;
+}
+
+
 }

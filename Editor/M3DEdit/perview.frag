@@ -9,5 +9,5 @@ void main(void)
 {
     float cosAngIncidence = dot(normal, lightDir);
     cosAngIncidence = clamp(cosAngIncidence, 0.0, 1.0);
-    gl_FragColor = (diffuse * cosAngIncidence) + (ambientLight * ambientIntensity);
+    gl_FragColor = (diffuse * cosAngIncidence) + (diffuse * ambientIntensity);
 }

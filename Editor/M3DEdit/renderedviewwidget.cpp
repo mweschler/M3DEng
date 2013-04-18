@@ -1,6 +1,7 @@
 #include <QMessageBox>
 
 #include "renderedviewwidget.h"
+#include "materialmanager.h"
 
 namespace M3DEditGUI{
 RenderedViewWidget::RenderedViewWidget(QWidget *parent) :
@@ -25,11 +26,12 @@ void RenderedViewWidget::paintGL()
         QGLBuffer vertBuffer = itr.value();
         QGLBuffer indexBuffer = geoIndex[itr.key()];
         QGLBuffer normalBuffer = geoNorms[itr.key()];
+        Material mat = M3DEditGUI::g_MatMgr->getMaterial(itr.key());
 
 
         this->makeCurrent();
         renderer->render(camera, program, vertBuffer,
-                         indexBuffer, normalBuffer, QVector4D(1.0f, 1.0f, 1.0f, 1.0f));
+                         indexBuffer, normalBuffer, mat.getDiffuseColor());
     }
 
     this->swapBuffers();
@@ -148,6 +150,7 @@ void RenderedViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
     }
 
     verts.create();
+    verts.setUsagePattern(QGLBuffer::DynamicDraw);
     verts.bind();
     verts.allocate(vertAttrib.data(), sizeof(float) *vertAttrib.size());
 
@@ -181,6 +184,44 @@ void RenderedViewWidget::addGeometry(int id, M3DEditLevel::Geometry *geo)
 
 void RenderedViewWidget::updateGeometry(int id, M3DEditLevel::Geometry *geo)
 {
+    this->makeCurrent();
+    qDebug()<<"[RenderedView] updateGeo";
+    QGLBuffer verts = geoVerts[id];
+
+
+    QVector<QVector3D> vertData = geo->getVerticies();
+
+    std::vector<float> vertAttrib;
+    for(int i = 0; i<vertData.size(); i++){
+        QVector3D vert = vertData[i];
+        vertAttrib.push_back(vert.x());
+        vertAttrib.push_back(vert.y());
+        vertAttrib.push_back(vert.z());
+        vertAttrib.push_back(1.0f);
+        qDebug()<<"[RenderView] Vert:"<<vert.x()<<vert.y()<<vert.z();
+    }
+
+
+    verts.bind();
+    verts.write(0, vertAttrib.data(), sizeof(float) * vertAttrib.size());
+
+    this->geoVerts[id] = verts;
+
+    this->paintGL();
+}
+
+void RenderedViewWidget::removeGeometry(int id, M3DEditLevel::Geometry *geo)
+{
+    geoVerts[id].destroy();
+    this->geoVerts.remove(id);
+
+    geoIndex[id].destroy();
+    this->geoIndex.remove(id);
+
+    geoNorms[id].destroy();
+    this->geoNorms.remove(id);
+
+    this->paintGL();
 }
 
 void RenderedViewWidget::updateGL()

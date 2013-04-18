@@ -10,6 +10,7 @@
 #include "axisrenderer.h"
 #include "axiscamera.h"
 #include "geometry.h"
+#include "box.h"
 
 namespace M3DEditGUI{
 
@@ -67,7 +68,8 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
 
     int selectFromPoint(QPoint point);
-    QVector3D getPosition(QPoint point);
+    QVector3D getPosition(QPoint point, bool useDepth = true);
+    QVector3D findClosestGrid(QPoint point);
 
 public slots:
     /*!
@@ -92,12 +94,16 @@ public slots:
     void updateGeometry(int id, M3DEditLevel::Geometry *geo);
     void cameraToggle(bool checked);
     void geoToolToggle(bool checked);
+    void drawBrush(M3DEditLevel::Box);
+    void stopBrush();
 
 signals:
 
     void selectedGeo(int id);
     void unselect(int id);
     void newCamPos(QVector3D, QVector3D);
+    void brushDraw(M3DEditLevel::Box);
+    void brushStop();
 
 private:
     //! holds vertex data
@@ -114,14 +120,21 @@ private:
     QGLShaderProgram program;
     QPoint lastMousePosition;
     QPoint lastLocalMouse;
+    QPoint firstMousePosition;
     bool mouseTrackRight;
     bool mouseTrackLeft;
     bool mouseMoved;
     bool initialized;
     bool camLine;
+    bool brushToggle;
+    bool validBrush;
+    bool resizeMode;
     ToolState toolState;
     QVector3D camFrom;
     QVector3D camTo;
+    M3DEditLevel::Box brush;
+    M3DEditLevel::Geometry *resizeTarget;
+    QVector3D resizeStart;
 };
 }
 

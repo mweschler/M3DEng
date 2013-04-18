@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "box.h"
+#include "materialmanager.h"
 
 namespace M3DEditGUI{
 MainWindow *mainWnd = NULL;
@@ -14,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     brushButton = false;
     M3DEditLevel::g_geoMgr = new M3DEditLevel::GeometryManager();
     M3DEditRender::g_axisRenderer = new M3DEditRender::AxisRenderer(M3DEditLevel::g_geoMgr);
+    M3DEditGUI::g_MatMgr = new MaterialManager();
     ui->setupUi(this);
 
     ui->axisXY->setAxisLock(M3DEditRender::XY);
@@ -45,6 +47,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryAdded(int,M3DEditLevel::Geometry*)),
                      ui->perspective, SLOT(addGeometry(int,M3DEditLevel::Geometry*)));
+    QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryRemoved(int,M3DEditLevel::Geometry*)),
+                     ui->perspective, SLOT(removeGeometry(int,M3DEditLevel::Geometry*)));
+    QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryUpdated(int,M3DEditLevel::Geometry*)),
+                     ui->perspective, SLOT(updateGeometry(int,M3DEditLevel::Geometry*)));
 
     QObject::connect(ui->axisXY, SIGNAL(selectedGeo(int)), this, SLOT(selectGeo(int)));
     QObject::connect(ui->axisXZ, SIGNAL(selectedGeo(int)), this, SLOT(selectGeo(int)));
@@ -78,6 +84,22 @@ int MainWindow::getSelected()
 {
     return this->selected;
 }
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Delete && this->selected != -1)
+    {
+        qDebug()<<"[MainWnd] Removing geo:"<<selected;
+        M3DEditLevel::g_geoMgr->removeGeometry(selected);
+        selected = -1;
+    }
+}
+
+QVector4D MainWindow::getRBGA()
+{
+    return QVector4D((float)ui->rSpin->value(),(float)ui->gSpin->value(), (float)ui->bSpin->value(), (float)ui->aSpin->value());
+}
+
 }
 
 void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
@@ -115,6 +137,12 @@ void M3DEditGUI::MainWindow::selectGeo(int id)
     this->selected = id;
     if(id >= 0){
         ui->geoID->setText(QString::number(id));
+        Material mat = g_MatMgr->getMaterial(id);
+        QVector4D diffuse = mat.getDiffuseColor();
+        ui->rSpin->setValue(diffuse.x());
+        ui->gSpin->setValue(diffuse.y());
+        ui->bSpin->setValue(diffuse.z());
+        ui->aSpin->setValue(diffuse.w());
     }else{
         ui->geoID->setText(QString());
     }
@@ -138,4 +166,42 @@ void M3DEditGUI::MainWindow::on_actionBrush_toggled(bool arg1)
     brushButton = arg1;
     if(cameraButton && brushButton)
         ui->actionCamera->toggle();
+}
+
+
+void M3DEditGUI::MainWindow::on_rSpin_valueChanged(double arg1)
+{
+    Material mat;
+    mat.setDiffuseColor(this->getRBGA());
+    if(selected >= 0)
+        g_MatMgr->addMaterial(selected, mat );
+
+    ui->perspective->paintGL();
+}
+
+void M3DEditGUI::MainWindow::on_gSpin_valueChanged(double arg1)
+{
+    Material mat;
+    mat.setDiffuseColor(this->getRBGA());
+    if(selected >= 0)
+        g_MatMgr->addMaterial(selected, mat );
+    ui->perspective->paintGL();
+}
+
+void M3DEditGUI::MainWindow::on_bSpin_valueChanged(double arg1)
+{
+    Material mat;
+    mat.setDiffuseColor(this->getRBGA());
+    if(selected >= 0)
+        g_MatMgr->addMaterial(selected, mat );
+    ui->perspective->paintGL();
+}
+
+void M3DEditGUI::MainWindow::on_aSpin_valueChanged(double arg1)
+{
+    Material mat;
+    mat.setDiffuseColor(this->getRBGA());
+    if(selected >= 0)
+        g_MatMgr->addMaterial(selected, mat );
+    ui->perspective->paintGL();
 }

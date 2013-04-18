@@ -31,6 +31,7 @@ signals:
 public slots:
     void addGeometry(int id, M3DEditLevel::Geometry *geo);
     void updateGeometry(int id, M3DEditLevel::Geometry *geo);
+    void removeGeometry(int id, M3DEditLevel::Geometry *geo);
     virtual void updateGL();
     void newCamPos(QVector3D pos, QVector3D target);
 private:

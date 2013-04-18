@@ -2,6 +2,7 @@
 #include <QDebug>
 
 #include "geometrymanager.h"
+#include "materialmanager.h"
 
 namespace M3DEditLevel{
 GeometryManager *g_geoMgr = NULL;
@@ -21,7 +22,7 @@ int GeometryManager::addGeometry(Geometry *newGeo){
     }
 
     this->geometryList[id] = newGeo;
-
+    M3DEditGUI::g_MatMgr->addMaterial(id, M3DEditGUI::Material());
     qDebug()<<"GeoMgr: Added Geo"<<id;
     emit geometryAdded(id, newGeo);
 
@@ -96,12 +97,13 @@ int GeometryManager::findGeo(QVector3D pos)
     qDebug()<<"[GeoMgr] grid pos"<<grid.x()<<grid.y()<<grid.z();
 
     QVector<int> matchList;
-    for(int i = 0; i< this->geometryList.size(); ++i){
-        QVector<QVector3D> verts = geometryList[i]->getVerticies();
-        for(int j = 0; j < verts.size(); ++j){
+
+    for(QMap<int,Geometry*>::Iterator itr = geometryList.begin(); itr != geometryList.end(); itr++){
+        QVector<QVector3D> verts = itr.value()->getVerticies();
+        for(int j = 0; j < 8; ++j){
             qDebug()<<"[GeoMgr] comparing vert"<<verts[j].x()<<verts[j].y()<<verts[j].z();
             if(verts[j] == grid){
-                matchList.push_back(i);
+                matchList.push_back(itr.key());
             }
         }
     }
