@@ -3,7 +3,7 @@
 namespace M3DEditRender{
 const static QVector4D ambientLight(1.0f, 1.0f, 1.0f, 1.0f);
 const static QVector4D ambientIntensity(0.2f, 0.2f, 0.2f, 1.0f);
-const static QVector3D lightDir(0.5f, 0.5f, 0.5f);
+const static QVector3D lightDir(0.5f, 1.0f, 0.5);
 
 PerspectiveRenderer *g_perspectiveRender = NULL;
 
