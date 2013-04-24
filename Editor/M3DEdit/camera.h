@@ -37,11 +37,10 @@ protected:
      */
     void setPosition(float x, float y, float z);
 
+    //! holds the proj * view for a world to clip transformation.
     QMatrix4x4 projection;
     //! current position of the camera
     QVector3D position;
-private:
-
 };
 }
 

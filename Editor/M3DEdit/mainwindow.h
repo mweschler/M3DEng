@@ -18,44 +18,61 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    M3DEditLevel::GeometryManager *getGeoMgr();
-    M3DEditRender::AxisRenderer *getAxisRender();
 
+    //! gets the id of the currently selected piece of geometry, -1 for none
     int getSelected();
 
 protected:
+    //! handles key release events
     virtual void keyReleaseEvent(QKeyEvent *event);
 
 private slots:
+    //! slot to handle the test funciton of adding geometry
     void on_actionAddGeo_triggered();
+
+    //! select the geometry of id given
     void selectGeo(int id);
 
-
+    //! camera button was toggled
     void on_actionCamera_toggled(bool arg1);
 
+    //! brush button was toggled
     void on_actionBrush_toggled(bool arg1);
 
+    //! red spinnger was changed
     void on_rSpin_valueChanged(double arg1);
 
+    //! green spinner was changed
     void on_gSpin_valueChanged(double arg1);
 
+    //! blue spinner was changed
     void on_bSpin_valueChanged(double arg1);
 
+    //! alpha spinner was changed
     void on_aSpin_valueChanged(double arg1);
 
 signals:
+    //! widgets should draw themselves
     void draw();
 
 private:
+    //! gets the current RGBA value of the spinners as a vector
     QVector4D getRBGA();
-    M3DEditRender::AxisRenderer axisRenderer;
-    M3DEditLevel::GeometryManager geoMgr;
+
+    //! qt designer UI
     Ui::MainWindow *ui;
+
+    //! id of selected geometry
     int selected;
+
+    //! state of the camera button
     bool cameraButton;
+
+    //! state of the brush button
     bool brushButton;
 };
 
+//! global pointer for this window
 extern MainWindow *mainWnd;
 }
 

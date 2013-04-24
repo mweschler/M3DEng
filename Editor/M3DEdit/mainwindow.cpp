@@ -8,22 +8,32 @@ MainWindow *mainWnd = NULL;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    axisRenderer(&geoMgr),
     ui(new Ui::MainWindow)
 {
     cameraButton = false;
     brushButton = false;
+
+    //create and set global for geometry manager
     M3DEditLevel::g_geoMgr = new M3DEditLevel::GeometryManager();
-    M3DEditRender::g_axisRenderer = new M3DEditRender::AxisRenderer(M3DEditLevel::g_geoMgr);
+
+    //create and set global for axis renderer
+    M3DEditRender::g_axisRenderer = new M3DEditRender::AxisRenderer();
+
+    //create and set global for material manager
     M3DEditGUI::g_MatMgr = new MaterialManager();
+
+    //setup the designer created UI
     ui->setupUi(this);
 
+    //initialize the views locks
     ui->axisXY->setAxisLock(M3DEditRender::XY);
     ui->axisXZ->setAxisLock(M3DEditRender::XZ);
     ui->axisYZ->setAxisLock(M3DEditRender::YZ);
 
+    //default of nothing selected
     this->selected = -1;
 
+    //Connect widgets singals and slots
     QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryAdded(int,M3DEditLevel::Geometry*)),
                      ui->axisXY, SLOT(addGeometry(int,M3DEditLevel::Geometry*)));
     QObject::connect(M3DEditLevel::g_geoMgr, SIGNAL(geometryAdded(int,M3DEditLevel::Geometry*)),
@@ -60,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, SIGNAL(draw()), ui->axisXZ, SLOT(updateGL()));
     QObject::connect(this, SIGNAL(draw()), ui->axisYZ, SLOT(updateGL()));
 
+    //set global pointer for this window
     mainWnd = this;
 }
 
@@ -70,15 +81,7 @@ MainWindow::~MainWindow()
     delete M3DEditLevel::g_geoMgr;
 }
 
-M3DEditLevel::GeometryManager *MainWindow::getGeoMgr()
-{
-    return &geoMgr;
-}
 
-M3DEditRender::AxisRenderer *MainWindow::getAxisRender()
-{
-    return &axisRenderer;
-}
 
 int MainWindow::getSelected()
 {
@@ -87,6 +90,7 @@ int MainWindow::getSelected()
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
+    //check for delete key and if so remove selected geometry
     if(event->key() == Qt::Key_Delete && this->selected != -1)
     {
         qDebug()<<"[MainWnd] Removing geo:"<<selected;
@@ -100,17 +104,18 @@ QVector4D MainWindow::getRBGA()
     return QVector4D((float)ui->rSpin->value(),(float)ui->gSpin->value(), (float)ui->bSpin->value(), (float)ui->aSpin->value());
 }
 
-}
 
-void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
+
+void MainWindow::on_actionAddGeo_triggered()
 {
+    //add some test geometry
     qDebug()<<"Adding Geo!";
+
     QVector<QVector3D> bounds;
     bounds.push_back(QVector3D(20, 20, 20));
     bounds.push_back(QVector3D(10, 10, 10));
     M3DEditLevel::Geometry *geo = new M3DEditLevel::Box(bounds);
-    int id = M3DEditLevel::g_geoMgr->addGeometry(geo);
-
+    M3DEditLevel::g_geoMgr->addGeometry(geo);
 
     QVector<QVector3D> b2;
     b2.push_back(QVector3D(30,30,-10));
@@ -118,23 +123,13 @@ void M3DEditGUI::MainWindow::on_actionAddGeo_triggered()
     M3DEditLevel::Geometry *geo2 = new M3DEditLevel::Box(b2);
     M3DEditLevel::g_geoMgr->addGeometry(geo2);
 
-    //QVector<QVector3D> bounds;
-    //bounds.push_back(QVector3D(2,2,2));
-    //bounds.push_back(QVector3D(3,3,3));
-    //geo->setBounds(bounds);
-
-    //qDebug()<<"Updating Geo";
-    //M3DEditLevel::g_geoMgr->updateGeometry(id, geo);
-
-    //qDebug()<<"Removing Geo";
-    //M3DEditLevel::g_geoMgr->removeGeometry(id);
-    //delete geo;
-    //delete geo2;
 }
 
-void M3DEditGUI::MainWindow::selectGeo(int id)
+void MainWindow::selectGeo(int id)
 {
     this->selected = id;
+
+    //something was selected, update properties
     if(id >= 0){
         ui->geoID->setText(QString::number(id));
         Material mat = g_MatMgr->getMaterial(id);
@@ -143,10 +138,16 @@ void M3DEditGUI::MainWindow::selectGeo(int id)
         ui->gSpin->setValue(diffuse.y());
         ui->bSpin->setValue(diffuse.z());
         ui->aSpin->setValue(diffuse.w());
-    }else{
+    }else{//unselected, set default for properties
         ui->geoID->setText(QString());
+        ui->rSpin->setValue(1);
+        ui->gSpin->setValue(1);
+        ui->bSpin->setValue(1);
+        ui->aSpin->setValue(1);
     }
         qDebug()<<"[MainWnd] selected geo"<<id;
+
+        //have views redraw
         ui->axisXY->paintGL();
         ui->axisXZ->paintGL();
         ui->axisYZ->paintGL();
@@ -154,54 +155,72 @@ void M3DEditGUI::MainWindow::selectGeo(int id)
 
 
 
-void M3DEditGUI::MainWindow::on_actionCamera_toggled(bool arg1)
+void MainWindow::on_actionCamera_toggled(bool arg1)
 {
     cameraButton = arg1;
+
     if(cameraButton && brushButton)
         ui->actionBrush->toggle();
 }
 
-void M3DEditGUI::MainWindow::on_actionBrush_toggled(bool arg1)
+void MainWindow::on_actionBrush_toggled(bool arg1)
 {
     brushButton = arg1;
+
     if(cameraButton && brushButton)
         ui->actionCamera->toggle();
 }
 
 
-void M3DEditGUI::MainWindow::on_rSpin_valueChanged(double arg1)
+void MainWindow::on_rSpin_valueChanged(double arg1)
 {
+    Q_UNUSED(arg1)
     Material mat;
+
     mat.setDiffuseColor(this->getRBGA());
+
     if(selected >= 0)
         g_MatMgr->addMaterial(selected, mat );
 
     ui->perspective->paintGL();
 }
 
-void M3DEditGUI::MainWindow::on_gSpin_valueChanged(double arg1)
+void MainWindow::on_gSpin_valueChanged(double arg1)
 {
+    Q_UNUSED(arg1)
     Material mat;
+
     mat.setDiffuseColor(this->getRBGA());
+
     if(selected >= 0)
         g_MatMgr->addMaterial(selected, mat );
+
     ui->perspective->paintGL();
 }
 
-void M3DEditGUI::MainWindow::on_bSpin_valueChanged(double arg1)
+void MainWindow::on_bSpin_valueChanged(double arg1)
 {
+    Q_UNUSED(arg1)
     Material mat;
+
     mat.setDiffuseColor(this->getRBGA());
+
     if(selected >= 0)
         g_MatMgr->addMaterial(selected, mat );
+
     ui->perspective->paintGL();
 }
 
-void M3DEditGUI::MainWindow::on_aSpin_valueChanged(double arg1)
+void MainWindow::on_aSpin_valueChanged(double arg1)
 {
+    Q_UNUSED(arg1)
     Material mat;
+
     mat.setDiffuseColor(this->getRBGA());
+
     if(selected >= 0)
         g_MatMgr->addMaterial(selected, mat );
+
     ui->perspective->paintGL();
+}
 }

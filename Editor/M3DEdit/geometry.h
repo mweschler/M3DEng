@@ -25,11 +25,23 @@ public:
     //! pure pirtual method to set the bounds of geometry
     virtual void setBounds(const QVector<QVector3D> &bounds) = 0;
 
+    //! pure virtual method for rebounding geometry
     virtual void rebound(QVector3D start) = 0;
+
+    /*!
+     * \brief pure virtual method for resizing geometry
+     * \param point resizing from
+     * \param point resizing to
+     */
     virtual void resize(QVector3D from, QVector3D to) = 0;
 
+    //! pure virtual function to get the indicies for line drawing
     virtual QVector<unsigned int> getLineIndex() const = 0;
+
+    //! pure virtual function to get the indicies for triangle mesh
     virtual QVector<unsigned int> getTriangleIndex() const = 0;
+
+    //! pure virtual funciton to get the normals
     virtual QVector<QVector3D> getNormals() const = 0;
 
 };

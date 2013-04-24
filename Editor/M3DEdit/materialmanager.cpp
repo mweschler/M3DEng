@@ -1,7 +1,9 @@
 #include "materialmanager.h"
 
 namespace M3DEditGUI{
+
 MaterialManager *g_MatMgr = NULL;
+
 MaterialManager::MaterialManager(QObject *parent) :
     QObject(parent)
 {
@@ -12,7 +14,7 @@ void MaterialManager::addMaterial(int id, Material material)
     this->materials[id] = Material(material);
 }
 
-Material MaterialManager::getMaterial(int id)
+Material MaterialManager::getMaterial(int id) const
 {
     return materials[id];
 }

@@ -50,7 +50,12 @@ public:
      */
     int total() const;
 
-    int findGeo(QVector3D pos);
+    /*!
+     * \brief finds a piece of geometry at this position
+     * \param pos the position for the geometry
+     * \return the id of the geometry found or -1 for none
+     */
+    int findGeo(const QVector3D pos) const;
 
 signals:
 
@@ -62,7 +67,6 @@ signals:
 
     //! signals geometry was updated in the level
     void geometryUpdated(int, M3DEditLevel::Geometry*);
-public slots:
 
 private:
     //! a map of all geometry in the level by id number
@@ -72,6 +76,7 @@ private:
     QStack<int> reclaimedIDs;
 };
 
+//! a global point for the geo manager singleton
 extern GeometryManager *g_geoMgr;
 }
 

@@ -17,6 +17,7 @@ Box::Box(const QVector<QVector3D> &bounds){
     this->setBounds(bounds);
 }
 
+//hard codeded indicies for drawing as a series of lines
 const static unsigned int linesIndex[] ={
     0, 1,
     0, 5,
@@ -32,6 +33,7 @@ const static unsigned int linesIndex[] ={
     0, 7
 };
 
+//hard codeded indicies for drawing as a triangle mesh
 const static unsigned int triangleIndex[] ={
     0, 1, 4,
     0, 4, 5,
@@ -53,6 +55,8 @@ const static unsigned int triangleIndex[] ={
 };
 
 QVector<QVector3D> Box::getVerticies() const{
+
+    //create the eight verticies from the bound points
     QVector3D vec1 (upperPoint);
     QVector3D vec2 (upperPoint.x(), upperPoint.y(), lowerPoint.z());
     QVector3D vec3 (upperPoint.x(), lowerPoint.y(), lowerPoint.z());
@@ -62,6 +66,7 @@ QVector<QVector3D> Box::getVerticies() const{
     QVector3D vec7 (lowerPoint.x(), lowerPoint.y(), upperPoint.z());
     QVector3D vec8 (upperPoint.x(), lowerPoint.y(), upperPoint.z());
 
+    //create a list of verticies from these 8. Duplicates to match with normals
     QVector<QVector3D> verts;
     verts.append(vec1);
     verts.append(vec2);
@@ -107,7 +112,10 @@ void Box::setBounds(const QVector<QVector3D> &bounds){
 QVector<unsigned int> Box::getLineIndex() const
 {
     QVector<unsigned int> indicies;
-    const int edges = 12;
+
+    const int edges = 12;//boxes have twelve edges
+
+    //create a two idicies for each edge to draw a line between them
     for(int i = 0; i < (edges * 2); ++i)
     {
         indicies.push_back(linesIndex[i]);
@@ -119,7 +127,12 @@ QVector<unsigned int> Box::getLineIndex() const
 QVector<unsigned int> Box::getTriangleIndex() const
 {
     QVector<unsigned int> indicies;
-    for(int i = 0; i<36; ++i){
+    const int sides = 8;
+    const int trianglesPerSide = 2;
+    const int vertsPerTriangle = 3;
+    const int verts = (sides * trianglesPerSide) * vertsPerTriangle;
+
+    for(int i = 0; i < verts; ++i){
         indicies.push_back(triangleIndex[i]);
     }
 
@@ -128,6 +141,7 @@ QVector<unsigned int> Box::getTriangleIndex() const
 
 QVector<QVector3D> Box::getNormals() const
 {
+    //box normals are standard
     QVector<QVector3D> normals;
     QVector3D left(-1.0f, 0.0f, 0.0f);
     QVector3D right(1.0f, 0.0f, 0.0f);
@@ -168,6 +182,8 @@ void Box::rebound(QVector3D start)
 {
     int match = -1;
     QVector<QVector3D> verts = this->getVerticies();
+
+    //find the vert index that matches the start value
     for(int i = 0; i < 8; ++i)
     {
         QVector3D vert = verts[i];
@@ -175,6 +191,7 @@ void Box::rebound(QVector3D start)
             match = i;
     }
 
+    //swap boundsing values depending on match
     switch(match){
     case 1: this->upperPoint = verts[1];
         this->lowerPoint = verts[6];
@@ -207,8 +224,8 @@ void Box::rebound(QVector3D start)
 
 void Box::resize(QVector3D from, QVector3D to)
 {
-    this->rebound(from);
-    this->upperPoint = to;
+    this->rebound(from);//rebound upper bound
+    this->upperPoint = to;//move it to resize
 }
 
 
