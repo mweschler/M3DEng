@@ -1,7 +1,8 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
-template <typename T> class QVector;
+template <typename T>
+class QVector;
 class QVector3D;
 class QVector4D;
 
@@ -30,8 +31,8 @@ public:
 
     /*!
      * \brief pure virtual method for resizing geometry
-     * \param point resizing from
-     * \param point resizing to
+     * \param from point resizing from
+     * \param to point resizing to
      */
     virtual void resize(QVector3D from, QVector3D to) = 0;
 

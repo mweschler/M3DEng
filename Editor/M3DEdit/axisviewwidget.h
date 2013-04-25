@@ -30,7 +30,7 @@ enum ToolState{
 };
 
 /*!
- * /brief A display widget that shows a level's geometry as lines.
+ * \brief An opengl view widget showing a single locked axis
  */
 class AxisViewWidget : public QGLWidget, protected QGLFunctions
 {
@@ -39,8 +39,8 @@ public:
     explicit AxisViewWidget(QWidget *parent = 0);
 
     /*!
-     * /brief sets the axises to lock to
-     * /param lock axis to lock to
+     * \brief sets the axises to lock to
+     * \param lock axis to lock to
      */
     void setAxisLock(M3DEditRender::AxisLock lock);
 
@@ -48,7 +48,7 @@ public:
     virtual int heightForWidth(int) const;
 
     /*!
-     * /brief draws the view via openGL
+     * \brief draws the view via openGL
      */
     virtual void paintGL();
 
@@ -56,14 +56,14 @@ protected:
 
 
     /*!
-     * /brief called when the widget is resized
-     * /param width width of new size
-     * /param height height of new size
+     * \brief called when the widget is resized
+     * \param width width of new size
+     * \param height height of new size
      */
     virtual void resizeGL(int width, int height);
 
     /*!
-     * /brief called when the widget is first displayed to initilize openGL
+     * \brief called when the widget is first displayed to initilize openGL
      */
     virtual void initializeGL();
 

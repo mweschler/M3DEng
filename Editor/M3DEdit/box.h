@@ -4,8 +4,6 @@
 #include "geometry.h"
 #include <QVector3D>
 #include <QVector4D>
-template <typename T> class QVector;
-
 
 namespace M3DEditLevel{
 
