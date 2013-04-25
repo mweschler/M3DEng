@@ -14,12 +14,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    entity.cpp \
-    entitymanager.cpp \
-    levelcontroller.cpp \
-    levelcompiler.cpp \
     axisrenderer.cpp \
-    leveldata.cpp \
     camera.cpp \
     geometrymanager.cpp \
     geometry.cpp \
@@ -33,12 +28,7 @@ SOURCES += main.cpp\
     material.cpp
 
 HEADERS  += mainwindow.h \
-    entity.h \
-    entitymanager.h \
-    levelcontroller.h \
-    levelcompiler.h \
     axisrenderer.h \
-    leveldata.h \
     camera.h \
     geometrymanager.h \
     geometry.h \
